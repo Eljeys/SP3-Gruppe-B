@@ -1,3 +1,4 @@
 # SP3
 
-**Group Members** Orn-Iliya, Lars, Elias
+**Group B**: 
+*Orn-Iliya, Lars, Elias*
