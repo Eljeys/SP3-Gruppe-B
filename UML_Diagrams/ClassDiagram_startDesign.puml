@@ -1,0 +1,117 @@
+@startuml
+class Main
+class Program
+abstract Menu
+class StartMenu
+class MainMenu
+class TextUI
+class FileIO
+interface List
+class WatchedList
+class SavedList
+class User
+class Movie
+class Series
+class Season
+interface Database
+abstract AMedia
+
+Main *-- Program
+Program *-- Menu
+Menu <|-- StartMenu
+Menu <|-- MainMenu
+Menu *-- TextUI
+Menu *-- Database
+StartMenu o-- User
+MainMenu o-- User
+MainMenu o-- AMedia
+User o-- List
+List <|-- WatchedList
+List <|-- SavedList
+List *-- Database
+AMedia *-- Database
+AMedia <|-- Movie
+AMedia <|-- Series
+Series *-- Season
+Database <|-- FileIO
+
+
+Main : + static void main(String[] args)
+
+Program : + void setup()
+
+TextUI : - Scanner scanner
+TextUI : + String getInput(String msg)
+TextUI : + void displayMessage(String msg)
+
+FileIO : - Scanner scanner
+FileIO : + ArrayList<User> readUserData(String path)
+FileIO : + void saveUserData(ArrayList<User> userData)
+FileIO : + ArrayList<Media> readMediaData(String path)
+FileIO : + ArrayList<Media> readListData(String path)
+FileIO : + void saveListData(ArrayList<Media> listData)
+
+Menu : - TextUI ui
+Menu : - Database fileIO
+Menu : - User user
+Menu : + void display()
+
+StartMenu : + boolean login()
+StartMenu : + boolean createUser()
+
+MainMenu : + void searchAll()
+MainMenu : + void searchCategory()
+MainMenu : + void watchedMedia()
+MainMenu : + void savedMedia()
+MainMenu : + void logout()
+
+AMedia : - Database io
+AMedia : - String title
+AMedia : - int releaseYear
+AMedia : - double rating
+AMedia : - ArrayList<String> categories
+AMedia : + void play()
+AMedia : + void saveToList()
+AMedia : + void removeFromList()
+AMedia : + String getTitle()
+AMedia : + int getReleaseYear()
+AMedia : + double getRating()
+AMedia : + ArrayList<String> getCategories()
+
+Movie : + Movie(String title, int releaseYear, double rating, ArrayList<String> categories)
+
+Series : - int endingYear
+Series : - ArrayList<String> seasonsAndEpisodes
+Series : + Series(String title, int releaseYear, int endingYear, ArrayList<String> categories, double rating, ArrayList<String> seasonsAndEpisodes )
+Series : + int getEndingYear()
+Series : + ArrayList<Season> getSeasons()
+
+Season : - int seasonNumber
+Season : - int numberOfEpisodes
+Season : - String seasonsAndEpisodes
+Season : + Season(String seasonAndEpisode)
+Season : + int getSeasonNumber()
+Season : + int getNumberOfEpisodes()
+
+User : - String name
+User : - String password
+User : + User(String name, String password)
+User : + String getName()
+User : + String getPassword()
+User : + void setName(String name)
+User : + void setPassword(String password)
+User : + ArrayList<Media> getList(String listType)
+
+List : + ArrayList<Media> getMediaList()
+List : + void addMedia(Media media)
+List : + void deleteMedia(Media media)
+List : + void updateList()
+List : + void saveList()
+
+WatchedList : - Database fileIO
+WatchedList : - ArrayList<Media> watchedList
+
+SavedList : - Database fileIO
+SavedList : - ArrayList<Media> savedList
+
+@enduml
