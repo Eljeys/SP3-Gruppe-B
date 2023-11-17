@@ -29,7 +29,6 @@ User o-- List
 List <|-- WatchedList
 List <|-- SavedList
 List *-- Database
-AMedia *-- Database
 AMedia <|-- Movie
 AMedia <|-- Series
 Series *-- Season
