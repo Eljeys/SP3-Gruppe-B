@@ -1,3 +1,4 @@
+import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 
 public abstract class AMedia {
@@ -15,11 +16,46 @@ public abstract class AMedia {
     }
 
    abstract void play();
-   abstract void saveToList();
-   abstract void removeFromList();
-   abstract String getTitle();
-   abstract int getReleaseYear();
-   abstract double getRating();
-   abstract ArrayList<String> getCategories();
+   public void saveToList(User user, String listType) {
+       ArrayList<AMedia> medias = user.getList(listType);
+       if (!medias.contains(this)) {
+           medias.add(this);
+           user.setList(listType, medias);
+       }
+   }
+   public void removeFromList(User user, String listType) {
+       ArrayList<AMedia> medias = user.getList(listType);
+       if (medias.contains(this)) {
+           medias.remove(this);
+           user.setList(listType, medias);
+       }
+   }
+   abstract String getMediaType();
 
+   public String getTitle() {
+       return title;
+   }
+   public int getReleaseYear() {
+       return releaseYear;
+   }
+   public double getRating() {
+       return rating;
+   }
+
+   public String getCategories() {
+       String c = "";
+       for (String s: categories) {
+           c = c.concat(s) + ", ";
+       }
+
+       return c.substring(0,c.length()-1);
+   }
+
+    @Override
+    public String toString() {
+        return "\nTitle: " + getTitle() +
+                "\nRelease Year: " + getReleaseYear() +
+                "\nRating: " + getRating() +
+                "\nCategories: " + getCategories();
+    }
 }

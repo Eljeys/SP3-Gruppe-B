@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
 public class MainMenu extends AMenu{
-    ArrayList<String> movieData = new ArrayList<>();
-    ArrayList<Movie> listOfMovies = new ArrayList<>();
-    ArrayList<String> categories;
+    private ArrayList<String> movieData = new ArrayList<>();
+    private ArrayList<Movie> listOfMovies = new ArrayList<>();
+    private ArrayList<String> categories;
     @Override
     void display() {
         boolean writeName = true;
@@ -40,17 +40,10 @@ public class MainMenu extends AMenu{
         movieData = fileIO.readMovieData("data/100bedstefilm.txt");
         listOfMovies = fileIO.getListOfMovies(movieData);
         for(Movie m: listOfMovies) {
-            System.out.println("\nTitle: "+m.getTitle());
-            System.out.println("Release year: "+m.getReleaseYear());
-            System.out.println("Rating: "+m.getRating());
-            categories = m.getCategories();
-            System.out.print("Categories: ");
-            for(String c: categories) {
-                System.out.print(c+" ");
-            }
-            System.out.println();
+            textUI.displayMessage(m.toString());
         }
     }
+
     ArrayList<Movie> getListOfMovies() {
         movieData = fileIO.readMovieData("data/100bedstefilm.txt");
         listOfMovies = fileIO.getListOfMovies(movieData);
@@ -61,13 +54,10 @@ public class MainMenu extends AMenu{
     public ArrayList<Movie> searchFilmByCategory(String category) {
         ArrayList<Movie> movies = getListOfMovies();
         ArrayList<Movie> movieByCategory = new ArrayList<>();
-        ArrayList<String> categories;
         for (Movie m : movies) {
-            categories = m.getCategories();
-            for (String c : categories) {
-                if (c.equalsIgnoreCase(category)) {
-                    movieByCategory.add(m);
-                }
+            String categories = m.getCategories();
+            if (categories.toLowerCase().contains(category.toLowerCase())) {
+                movieByCategory.add(m);
             }
         }
         return movieByCategory;
@@ -76,21 +66,9 @@ public class MainMenu extends AMenu{
     void displayMoviesByCategory(ArrayList<Movie> listOfMovies) {
         textUI.displayMessage("I have found "+listOfMovies.size()+" movies with Drama as category");
         for(Movie m: listOfMovies) {
-            System.out.println("\nTitle: "+m.getTitle());
-            System.out.println("Release year: "+m.getReleaseYear());
-            System.out.println("Rating: "+m.getRating());
-            categories = m.getCategories();
-            System.out.print("Categories: ");
-            for(String c: categories) {
-                System.out.print(c+" ");
-            }
-            System.out.println();
+            textUI.displayMessage(m.toString());
         }
 
     }
-
-
-
-
 }
 

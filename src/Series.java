@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Series extends AMedia {
     private int endingYear;
     private ArrayList<String> seasonAndEpisodes;
+    private ArrayList<Season> seasons = new ArrayList<>();
 
     public Series(String title, int releaseYear, int endingYear, ArrayList<String> categories, double rating, ArrayList<String> seasonAndEpisodes) {
         super(title,releaseYear, rating, categories);
@@ -15,42 +16,30 @@ public class Series extends AMedia {
     }
 
     public ArrayList<Season> getSeasons() {
-        ArrayList<Season> seasons = new ArrayList<>();
+        //Arraylist<String> seasonsAndEpisodes:
+        //"1-13", "2-13", "3-13", "4-13", "5-13", "6-21"
+        for (String s: seasonAndEpisodes) {
+            Season season = new Season(s);
+            seasons.add(season);
+        }
         return seasons;
     }
 
     @Override
-    void play() {
+    public void play() {
 
     }
 
     @Override
-    void saveToList() {
-
+    String getMediaType() {
+        return "SERIES";
     }
 
     @Override
-    void removeFromList() {
-
-    }
-
-    @Override
-    String getTitle() {
-        return null;
-    }
-
-    @Override
-    int getReleaseYear() {
-        return 0;
-    }
-
-    @Override
-    double getRating() {
-        return 0;
-    }
-
-    @Override
-    ArrayList<String> getCategories() {
-        return null;
+    public String toString() {
+        return getMediaType() +
+                super.toString() +
+                "\nEnding Year: " + getEndingYear() +
+                "\nTotal number Of Seasons: " + getSeasons().size();
     }
 }

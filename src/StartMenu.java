@@ -113,7 +113,4 @@ public class StartMenu extends AMenu{
             }
         }
     }
-
-
-
 }

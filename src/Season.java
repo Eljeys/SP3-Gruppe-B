@@ -4,10 +4,13 @@ public class Season {
     private int seasonNumber;
     private int numberOfEpisodes;
 
-    private String seasonsAndEpisodes;
+    //private String seasonsAndEpisodes;
 
     public Season(String seasonAndEpisode) {
-        this.seasonsAndEpisodes = seasonAndEpisode;
+        //"1-13"
+        String[] numbers = seasonAndEpisode.split("-");
+        seasonNumber = Integer.parseInt(numbers[0]);
+        numberOfEpisodes = Integer.parseInt(numbers[1]);
     }
 
     public int getSeasonNumber() {
