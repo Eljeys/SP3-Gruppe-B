@@ -7,6 +7,13 @@ public abstract class AMedia {
     private double rating;
     private ArrayList<String> categories;
 
+    public AMedia(String title, int releaseYear, double rating, ArrayList<String> categories) {
+        this.title = title;
+        this.releaseYear = releaseYear;
+        this.rating = rating;
+        this.categories = categories;
+    }
+
    abstract void play();
    abstract void saveToList();
    abstract void removeFromList();

@@ -74,24 +74,24 @@ public class FileIO implements Database{
         return listOfMovies;
     }
 
-    @Override
-    public void searchFilmByCategory(String category) {
+
+    public void searchMovieByCategory(String category) {
 
     }
 
 
-    @Override
-    public void searchFilmByRating() {
+
+    public void searchMovieByRating() {
 
     }
 
-    @Override
-    public void searchFilmByYear() {
+
+    public void searchMovieByYear() {
 
     }
 
-    @Override
-    public void searchFilmByTitle() {
+
+    public void searchMovieByTitle(String title) {
 
     }
 
