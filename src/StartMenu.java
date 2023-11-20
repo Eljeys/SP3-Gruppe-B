@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 
 public class StartMenu extends AMenu{
+
+
+
     @Override
     void display() {
         boolean chooseInput = true;
@@ -83,4 +86,7 @@ public class StartMenu extends AMenu{
     private void createAccount() {
 
     }
+
+
+
 }
