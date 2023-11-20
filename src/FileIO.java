@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,9 +23,21 @@ public class FileIO implements Database{
         } catch (FileNotFoundException e) {
             return null;
         }
-
         return data;
     }
+
+    public boolean saveUserData(String path, String username, String password) {
+        try {
+            FileWriter writer = new FileWriter(path,true);
+            String textToSave = "\n"+username + "," + password;
+            writer.write(textToSave);
+            writer.close();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
     public ArrayList<String> readMovieData(String path) {
         ArrayList<String> movieData = new ArrayList<>();
         File filmFile = new File(path);
