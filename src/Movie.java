@@ -8,22 +8,20 @@ public class Movie extends AMedia{
     private ArrayList<String> categories;
 
     public Movie(String title, int releaseYear, double rating, ArrayList<String> categories) {
-        this.title = title;
-        this.releaseYear = releaseYear;
-        this.rating = rating;
-        this.categories = categories;
+        super(title, releaseYear, rating, categories);
     }
 
     @Override
-    void play() {
+    public void play() {
+        System.out.println(getMovie()+" afspilles!");
 
     }
     @Override
-    void saveToList() {
+    public void saveToList() {
 
     }
     @Override
-    void removeFromList() {
+    public void removeFromList() {
 
     }
     @Override
@@ -32,17 +30,18 @@ public class Movie extends AMedia{
     }
 
     @Override
-    int getReleaseYear() {
+    public int getReleaseYear() {
         return releaseYear;
     }
 
     @Override
-    double getRating() {
+    public double getRating() {
         return rating;
     }
 
     @Override
-    ArrayList<String> getCategories() {
+    public ArrayList<String> getCategories() {
         return categories;
     }
+
 }
