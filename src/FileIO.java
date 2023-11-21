@@ -39,25 +39,23 @@ public class FileIO implements Database{
     }
 
     public ArrayList<String> readMediaData(String path) {
-        ArrayList<String> mediaData = new ArrayList<>();
-        File mediaFile = new File(path);
+        ArrayList<String> movieData = new ArrayList<>();
+        File filmFile = new File(path);
         try {
-            Scanner scanner = new Scanner(mediaFile);
+            Scanner scanner = new Scanner(filmFile);
             while (scanner.hasNextLine()) {
                 String s = scanner.nextLine();
-                mediaData.add(s);
+                movieData.add(s);
             }
         } catch (FileNotFoundException e) {
             return null;
         }
-
-        return mediaData;
+        return movieData;
     }
 
     public ArrayList<AMedia> getListOfMovies(ArrayList<String> readMovieData) {
-        ArrayList<String> categories = new ArrayList<>();
+        ArrayList<String> categories;
         ArrayList<AMedia> listOfMovies = new ArrayList<>();
-
         for(String m: readMovieData) {
             String[] row = m.split(";");
             String title = row[0].trim();
@@ -66,26 +64,25 @@ public class FileIO implements Database{
             double rating = Double.parseDouble(r);
             String c = row[2].trim();
             String[] category = c.split(",");
+            categories = new ArrayList<>();
             for(String s: category) {
                 categories.add(s.trim());
             }
-
             listOfMovies.add(new Movie(title,releaseYear,rating,categories));
+
         }
         return listOfMovies;
     }
 
     public ArrayList<AMedia> getListOfSeries(ArrayList<String> readSeriesData) {
-        ArrayList<String> categories = new ArrayList<>();
-        ArrayList<String> seasonsAndEpisodes = new ArrayList<>();
+        ArrayList<String> categories;
+        ArrayList<String> seasonsAndEpisodes;
         ArrayList<AMedia> listOfSeries = new ArrayList<>();
         String releaseYear = "";
         String endingYear = "";
-
         for(String m: readSeriesData) {
             String[] row = m.split(";");
             String title = row[0].trim();
-
             if(row[1].trim().length() == 4) {
                 releaseYear = row[1].trim();
                 endingYear = releaseYear;
@@ -97,10 +94,9 @@ public class FileIO implements Database{
                 releaseYear = year[0].trim();
                 endingYear = year[1].trim();
             }
-
             String c = row[2].trim();
             String[] category = c.split(",");
-
+            categories = new ArrayList<>();
             for(String s: category) {
                 categories.add(s.trim());
             }
@@ -110,13 +106,16 @@ public class FileIO implements Database{
 
             String season = row[4].trim();
             String[] seasons = season.split(",");
-
+            seasonsAndEpisodes = new ArrayList<>();
             for(String s: seasons) {
                 seasonsAndEpisodes.add(s.trim());
             }
-
             listOfSeries.add(new Series(title,releaseYear,endingYear,categories,rating,seasonsAndEpisodes));
+
         }
         return listOfSeries;
     }
+
+
+
 }

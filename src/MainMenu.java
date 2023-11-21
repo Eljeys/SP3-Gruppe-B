@@ -67,9 +67,8 @@ public class MainMenu extends AMenu{
         for(AMedia m: listOfMedias) {
             textUI.displayMessage(m.toString());
         }
+
     }
-
-
     void displayAllMedia(ArrayList<AMedia> listOfMedias) {
         for(AMedia m: listOfMedias) {
             System.out.println(m.toString());
