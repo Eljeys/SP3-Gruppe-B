@@ -23,8 +23,14 @@ public class SavedList implements List{
     }
 
     @Override
-    public void deleteMedia(AMedia media) {
-        savedMedia.remove(media);
+    public boolean deleteMedia(AMedia media) {
+        for (AMedia m: savedMedia) {
+            if (m.toString().equals(media.toString())) {
+                savedMedia.remove(media);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

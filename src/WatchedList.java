@@ -27,8 +27,15 @@ public class WatchedList implements List{
     }
 
     @Override
-    public void deleteMedia(AMedia media) {
-        watchedMedia.remove(media);
+    public boolean deleteMedia(AMedia media) {
+        for (AMedia m: watchedMedia) {
+            if (m.toString().equals(media.toString())) {
+                watchedMedia.remove(media);
+                return true;
+
+            }
+        }
+        return false;
     }
 
     @Override
