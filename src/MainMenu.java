@@ -7,34 +7,48 @@ public class MainMenu extends AMenu{
     private ArrayList<AMedia> listOfSeries = new ArrayList<>();
     @Override
     void display() {
-        boolean writeName = true;
-        while (writeName) {
-            textUI.displayMessage("\n1. Search for a specific category of films!");
-            textUI.displayMessage("2. Search for a specific rating of films!");
-            textUI.displayMessage("3. Search for a specific year of films!");
-            textUI.displayMessage("4. Search for a specific title of films!");
+        boolean chooseOption = true;
+        while (chooseOption) {
+            textUI.displayMessage("""
 
-            String choice = textUI.getInput("\nInput your choice 1-4 or (q) if you want to quit: ");
-            choice = choice.toLowerCase();
-            switch (choice) {
-                case "1":
-                    displayMediaByCategory(searchMediaByCategory("Drama"));
-                    displayAllMedia(listOfMedias);
-                    break;
-                case "2":
+                    MAIN MENU:
+                    1. Search by title
+                    2. Search by category
+                    3. See list of watched Series And Movies
+                    4. See list of favorites
+                    5. Log out
+                    """);
 
-                    break;
-                case "3":
+            String choice = textUI.getInput("Choose option: ");
 
-                    break;
-                case "4":
+            try {
+                int menuOption = Integer.parseInt(choice);
 
-                    break;
-                case "q":
-                    writeName = false;
-                default:
-                    textUI.displayMessage("You haven't typed 1-4! Try again og type (q) if you want to quit!\n");
-                    break;
+                switch (menuOption) {
+                    case 1:
+                        //Search media by title
+                        break;
+                    case 2:
+                        // search by category
+                        break;
+                    case 3:
+                        // see list of watched Series And Movies
+                        break;
+                    case 4:
+                        //See list of favorites
+                        break;
+                    case 5:
+                        //logout
+                        user = null;
+                        chooseOption = false;
+                        break;
+                    default:
+                        textUI.displayMessage("Not a Menu option!");
+                        break;
+                }
+
+            } catch (NumberFormatException e) {
+                textUI.displayMessage("Choose a number!");
             }
         }
     }
