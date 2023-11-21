@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Movie extends AMedia{
-    public Movie(String title, int releaseYear, double rating, ArrayList<String> categories) {
+    public Movie(String title, String releaseYear, double rating, ArrayList<String> categories) {
         super(title, releaseYear, rating, categories);
     }
 

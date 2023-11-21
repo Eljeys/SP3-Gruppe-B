@@ -4,11 +4,11 @@ import java.util.ArrayList;
 public abstract class AMedia {
     private Database io;
     private String title;
-    private int releaseYear;
+    private String releaseYear;
     private double rating;
     private ArrayList<String> categories;
 
-    public AMedia(String title, int releaseYear, double rating, ArrayList<String> categories) {
+    public AMedia(String title, String releaseYear, double rating, ArrayList<String> categories) {
         this.title = title;
         this.releaseYear = releaseYear;
         this.rating = rating;
@@ -35,7 +35,7 @@ public abstract class AMedia {
    public String getTitle() {
        return title;
    }
-   public int getReleaseYear() {
+   public String getReleaseYear() {
        return releaseYear;
    }
    public double getRating() {
@@ -54,8 +54,8 @@ public abstract class AMedia {
     @Override
     public String toString() {
         return "\nTitle: " + getTitle() +
-                "\nRelease Year: " + getReleaseYear() +
                 "\nRating: " + getRating() +
-                "\nCategories: " + getCategories();
+                "\nCategories: " + getCategories() +
+                "\nRelease Year: " + getReleaseYear();
     }
 }

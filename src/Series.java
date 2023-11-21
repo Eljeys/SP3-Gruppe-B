@@ -1,17 +1,17 @@
 import java.util.ArrayList;
 
 public class Series extends AMedia {
-    private int endingYear;
+    private String endingYear;
     private ArrayList<String> seasonAndEpisodes;
     private ArrayList<Season> seasons = new ArrayList<>();
 
-    public Series(String title, int releaseYear, int endingYear, ArrayList<String> categories, double rating, ArrayList<String> seasonAndEpisodes) {
+    public Series(String title, String releaseYear, String endingYear, ArrayList<String> categories, double rating, ArrayList<String> seasonAndEpisodes) {
         super(title,releaseYear, rating, categories);
         this.endingYear = endingYear;
         this.seasonAndEpisodes = seasonAndEpisodes;
     }
 
-    public int getEndingYear() {
+    public String getEndingYear() {
         return endingYear;
     }
 

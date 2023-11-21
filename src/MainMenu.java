@@ -2,8 +2,9 @@ import java.util.ArrayList;
 
 public class MainMenu extends AMenu{
     private ArrayList<String> movieData = new ArrayList<>();
-    private ArrayList<Movie> listOfMovies = new ArrayList<>();
-    private ArrayList<String> categories;
+    private ArrayList<String> serieData = new ArrayList<>();
+    private ArrayList<AMedia> listOfMedias = new ArrayList<>();
+    private ArrayList<AMedia> listOfSeries = new ArrayList<>();
     @Override
     void display() {
         boolean writeName = true;
@@ -17,16 +18,17 @@ public class MainMenu extends AMenu{
             choice = choice.toLowerCase();
             switch (choice) {
                 case "1":
-                    displayMoviesByCategory(searchFilmByCategory("Drama"));
+                    displayMediaByCategory(searchMediaByCategory("Drama"));
+                    displayAllMedia(listOfMedias);
                     break;
                 case "2":
-                    fileIO.searchFilmByRating();
+
                     break;
                 case "3":
-                    fileIO.searchFilmByYear();
+
                     break;
                 case "4":
-                    fileIO.searchFilmByTitle();
+
                     break;
                 case "q":
                     writeName = false;
@@ -36,25 +38,22 @@ public class MainMenu extends AMenu{
             }
         }
     }
-    void displayMovies() {
-        movieData = fileIO.readMovieData("data/100bedstefilm.txt");
-        listOfMovies = fileIO.getListOfMovies(movieData);
-        for(Movie m: listOfMovies) {
-            textUI.displayMessage(m.toString());
-        }
-    }
 
-    ArrayList<Movie> getListOfMovies() {
-        movieData = fileIO.readMovieData("data/100bedstefilm.txt");
-        listOfMovies = fileIO.getListOfMovies(movieData);
-        return listOfMovies;
+    ArrayList<AMedia> getListOfMedias() {
+        movieData = fileIO.readMediaData("data/100bedstefilm.txt");
+        serieData = fileIO.readMediaData( "data/100bedsteserier.txt");
+
+        listOfMedias = fileIO.getListOfMovies(movieData);
+        listOfSeries = fileIO.getListOfSeries(serieData);
+        listOfMedias.addAll(listOfSeries);
+        return listOfMedias;
     }
 
 
-    public ArrayList<Movie> searchFilmByCategory(String category) {
-        ArrayList<Movie> movies = getListOfMovies();
-        ArrayList<Movie> movieByCategory = new ArrayList<>();
-        for (Movie m : movies) {
+    public ArrayList<AMedia> searchMediaByCategory(String category) {
+        ArrayList<AMedia> medias = getListOfMedias();
+        ArrayList<AMedia> movieByCategory = new ArrayList<>();
+        for (AMedia m : medias) {
             String categories = m.getCategories();
             if (categories.toLowerCase().contains(category.toLowerCase())) {
                 movieByCategory.add(m);
@@ -63,12 +62,18 @@ public class MainMenu extends AMenu{
         return movieByCategory;
     }
 
-    void displayMoviesByCategory(ArrayList<Movie> listOfMovies) {
-        textUI.displayMessage("I have found "+listOfMovies.size()+" movies with Drama as category");
-        for(Movie m: listOfMovies) {
+    void displayMediaByCategory(ArrayList<AMedia> listOfMedias) {
+        textUI.displayMessage("I have found "+listOfMedias.size()+" movies with Drama as category");
+        for(AMedia m: listOfMedias) {
             textUI.displayMessage(m.toString());
         }
+    }
 
+
+    void displayAllMedia(ArrayList<AMedia> listOfMedias) {
+        for(AMedia m: listOfMedias) {
+            System.out.println(m.toString());
+        }
     }
 }
 
