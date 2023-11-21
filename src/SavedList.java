@@ -26,7 +26,7 @@ public class SavedList implements List{
     public boolean deleteMedia(AMedia media) {
         for (AMedia m: savedMedia) {
             if (m.toString().equals(media.toString())) {
-                savedMedia.remove(media);
+                savedMedia.remove(m);
                 return true;
             }
         }

@@ -40,8 +40,54 @@ public class MainMenu extends AMenu{
 
                 switch (menuOption) {
                     case 1:
-                        displayAllMedia(searchMediaByTitle("Amadeus"));
-                        //Search media by title
+                        String choiceMedia = "";
+                        boolean existInList = false;
+                        while(!existInList) {
+                            choiceMedia = textUI.getInput("Type in media Title: ");
+                            if (doesTitleExistInMedia(choiceMedia)) {
+                                existInList = true;
+                            } else {
+                                textUI.displayMessage("Media doesn't exist in our list");
+                            }
+                        }
+                        displayAllMedia(searchMediaByTitle(choiceMedia));
+                        String choiceTitle = textUI.getInput("Choose a media from the list!");
+                        int menuOpt3 = Integer.parseInt(choiceTitle);
+                        ArrayList<AMedia> listOfChosenTitle = searchMediaByTitle(choiceMedia);
+                        AMedia chosenTitle = listOfChosenTitle.get(menuOpt3-1);
+                        if(Integer.parseInt(choiceTitle) > 0 &&  Integer.parseInt(choiceTitle) <= listOfTitles.size()) {
+                            textUI.displayMessage("What do you want to do with '" + chosenTitle.getTitle() + "'");
+                            textUI.displayMessage("""
+                                    Choose option:
+                                    1. Play media
+                                    2. Save media to Favorites
+                                    3. Remove media from Favorites
+                                                                
+                                    """);
+                            String choice2 = textUI.getInput("choose an option: ");
+                            try {
+                                int menuOpt1 = Integer.parseInt(choice2);
+                                switch (menuOpt1) {
+                                    case 1:
+                                        textUI.displayMessage(chosenTitle.getTitle() + " is now playing");
+                                        addToList(watchedList, chosenTitle);
+                                        break;
+                                    case 2:
+                                        textUI.displayMessage(chosenTitle.getTitle() + " has been added to your SavedList");
+                                        addToList(savedList, chosenTitle);
+                                        break;
+                                    case 3:
+                                        textUI.displayMessage(chosenTitle.getTitle() + " has been removed from your SaveList");
+                                        deleteFromList(savedList, chosenTitle);
+                                        break;
+                                    default:
+                                        textUI.displayMessage("Not a Menu option");
+                                        break;
+                                }
+                            } catch (NumberFormatException e) {
+                                textUI.displayMessage("choose a number!");
+                            }
+                        }
                         break;
                     case 2:
                         textUI.displayMessage("""
@@ -135,10 +181,9 @@ public class MainMenu extends AMenu{
                             textUI.displayMessage("Choose a number!");
                         }
                         String choiceCategory = textUI.getInput("Choose a media from the list!");
-                        int menuOpt3 = Integer.parseInt(choiceCategory);
-                        AMedia chosenMedia = mediasByCategory.get(menuOpt3-1);
+                        int menuOpt4 = Integer.parseInt(choiceCategory);
+                        AMedia chosenMedia = mediasByCategory.get(menuOpt4-1);
                         if(Integer.parseInt(choiceCategory) > 0 &&  Integer.parseInt(choiceCategory) <= mediasByCategory.size()) {
-                            //textUI.displayMessage("What do you want to do with the "+chosenMedia.getType()+" "+chosenMedia.getTitle());
                             textUI.displayMessage("What do you want to do with '"+chosenMedia.getTitle()+"'");
                             textUI.displayMessage("""
                                                                         
@@ -149,24 +194,18 @@ public class MainMenu extends AMenu{
                                     """);
                             String choiceMediaCategory = textUI.getInput("Choose option");
                             try {
-                                int menuOpt = Integer.parseInt(choiceMediaCategory);
-                                switch (menuOpt) {
+                                int menuOpt2 = Integer.parseInt(choiceMediaCategory);
+                                switch (menuOpt2) {
                                     case 1:
                                         textUI.displayMessage(chosenMedia.getTitle()+" is now playing");
-                                        //chosenMedia.play();
                                         addToList(watchedList, chosenMedia);
-                                        //user.setList("Saved", ArrayList<AMedia> chosenMedia);
-                                        //user.setList("Watched", ArrayList<AMedia> chosenMedia);
                                         break;
                                     case 2:
                                         textUI.displayMessage(chosenMedia.getTitle()+" has been added to your SavedList");
-                                        //user.setList("Saved", ArrayList<AMedia> chosenMedia);
                                         addToList(savedList, chosenMedia);
                                         break;
                                     case 3:
                                         textUI.displayMessage(chosenMedia.getTitle()+" has been removed from your SaveList");
-                                        //user.WatchedList.deleteMedia(chosenMedia);
-                                        //user.deleteMedia(chosenMedia);
                                         deleteFromList(savedList, chosenMedia);
                                         break;
                                     default:
@@ -265,13 +304,13 @@ public class MainMenu extends AMenu{
         return listOfTitles;
     }
     boolean doesTitleExistInMedia(String chooseMedia) {
-        boolean doExist = false;
+        ArrayList<AMedia> listOfMedias = getListOfMedias();
         for(AMedia m: listOfMedias) {
-            if(m.getTitle().contains(chooseMedia)) {
-                doExist = true;
+            if(m.getTitle().equalsIgnoreCase(chooseMedia)) {
+                return true;
             }
         }
-        return doExist;
+        return false;
     }
     void displayMediaByCategory(ArrayList<AMedia> listOfMedias, String category) {
         int count = 0;
