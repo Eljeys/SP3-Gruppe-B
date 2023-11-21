@@ -8,4 +8,6 @@ public interface Database {
 
     ArrayList<AMedia> getListOfMovies(ArrayList<String> readMovieData);
     ArrayList<AMedia> getListOfSeries(ArrayList<String> readMovieData);
+
+    boolean saveListData(String listType, ArrayList<String> mediaData, ArrayList<AMedia> listData);
 }

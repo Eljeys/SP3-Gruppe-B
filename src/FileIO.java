@@ -116,6 +116,23 @@ public class FileIO implements Database{
         return listOfSeries;
     }
 
+    public boolean saveListData(String listType, ArrayList<String> mediaData, ArrayList<AMedia> listData){
+        try {
+            FileWriter writer = new FileWriter("data/" + listType+ ".txt");
 
+            for (AMedia m: listData) {
+                for (String s : mediaData) {
+                    if (s.toLowerCase().contains(m.getTitle().toLowerCase())) {
+                        writer.write(s + "\n");
+                    }
+                }
+            }
+
+            writer.close();
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
 
 }

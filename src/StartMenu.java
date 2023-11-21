@@ -50,20 +50,35 @@ public class StartMenu extends AMenu{
         ArrayList<String> data = fileIO.readUserData("data/userData.txt");
 
         if (!data.isEmpty()) {
-            String typedUsername = textUI.getInput("Input username or back to start menu (q): ");
-
             outerLoop:
-            for (String s : data) {
-                String[] row = s.split(",");
-                String username = row[0];
-                String password = row[1];
+            while (true) {
+                String typedUsername = textUI.getInput("Input username or back to start menu (q): ");
 
-                    if (username.equalsIgnoreCase(typedUsername)) {
+                if (typedUsername.equalsIgnoreCase("q")) {
+                    break;
+                } else {
+
+                    String p = "";
+                    String u = "";
+                    for (String s : data) {
+                        String[] row = s.split(",");
+                        String username = row[0];
+                        String password = row[1];
+
+                        if (username.equalsIgnoreCase(typedUsername)) {
+                            u = username;
+                            p = password;
+                        }
+                    }
+
+                    if (p.isEmpty() && u.isEmpty()) {
+                        textUI.displayMessage("Could not find user with given username.");
+                    } else {
                         while (true) {
                             String typedPassword = textUI.getInput("Input password or back to start menu (q): ");
 
-                            if (password.equals(typedPassword)) {
-                                user = new User(username, password);
+                            if (p.equals(typedPassword)) {
+                                user = new User(u, p);
                                 break outerLoop;
                             } else if (typedPassword.equalsIgnoreCase("q")) {
                                 break outerLoop;
@@ -71,8 +86,7 @@ public class StartMenu extends AMenu{
                                 textUI.displayMessage("Password did not match!");
                             }
                         }
-                    } else if (typedUsername.equalsIgnoreCase("q")) {
-                        break;
+                    }
                     }
                 }
         } else {
@@ -139,5 +153,9 @@ public class StartMenu extends AMenu{
                 textUI.displayMessage("Must begin with a letter! Try again.");
             }
         }
+    }
+
+    public User userLoggedin() {
+        return user;
     }
 }

@@ -5,8 +5,19 @@ public class MainMenu extends AMenu{
     private ArrayList<String> serieData = new ArrayList<>();
     private ArrayList<AMedia> listOfMedias = new ArrayList<>();
     private ArrayList<AMedia> listOfSeries = new ArrayList<>();
+    private User user;
+    private List watchedList;
+    private List savedList;
+
+    public MainMenu(User user) {
+        this.user = user;
+        watchedList = user.getList("watched");
+        savedList = user.getList("saved");
+    }
+
     @Override
     void display() {
+        textUI.displayMessage("\nWelcome " + user.getUsername()+"!");
         boolean chooseOption = true;
         while (chooseOption) {
             textUI.displayMessage("""
@@ -33,9 +44,11 @@ public class MainMenu extends AMenu{
                         break;
                     case 3:
                         // see list of watched Series And Movies
+                        showList(watchedList);
                         break;
                     case 4:
                         //See list of favorites
+                        showList(savedList);
                         break;
                     case 5:
                         //logout
@@ -49,6 +62,25 @@ public class MainMenu extends AMenu{
             } catch (NumberFormatException e) {
                 textUI.displayMessage("Choose a number!");
             }
+        }
+    }
+
+    private void addToList(List list, AMedia media) {
+        boolean isAdded = list.addMedia(media);
+        if(isAdded) {
+            textUI.displayMessage("Added to the list.");
+        } else {
+            textUI.displayMessage("Already on the list!");
+        }
+    }
+
+    private void showList(List list) {
+        ArrayList<AMedia> medias = list.getMediaList();
+
+        int counter = 1;
+        for (AMedia m: medias) {
+            textUI.displayMessage(counter + ": (" + m.getMediaType() + ") " + m.getTitle() + "; " + m.getReleaseYear());
+            counter++;
         }
     }
 

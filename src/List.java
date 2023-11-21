@@ -3,9 +3,7 @@ import java.util.ArrayList;
 
 public interface List {
     ArrayList<AMedia> getMediaList();
-    void addMedia(Media media);
-    void deleteMedia(Media media);
-    void saveList(ArrayList<AMedia> listToSave);
-    void updateList(ArrayList<AMedia> listToUpdate);
-
+    boolean addMedia(AMedia media);
+    void deleteMedia(AMedia media);
+    void saveList(ArrayList<String> mediaData);
 }

@@ -16,20 +16,17 @@ public abstract class AMedia {
     }
 
    abstract void play();
-   public void saveToList(User user, String listType) {
-       ArrayList<AMedia> medias = user.getList(listType);
-       if (!medias.contains(this)) {
-           medias.add(this);
-           user.setList(listType, medias);
-       }
+
+   public void saveToList(User user, String listType, AMedia media) {
+       List list = user.getList(listType);
+       list.addMedia(media);
    }
-   public void removeFromList(User user, String listType) {
-       ArrayList<AMedia> medias = user.getList(listType);
-       if (medias.contains(this)) {
-           medias.remove(this);
-           user.setList(listType, medias);
-       }
+
+   public void removeFromList(User user, String listType, AMedia media) {
+      List list = user.getList(listType);
+      list.deleteMedia(media);
    }
+
    abstract String getMediaType();
 
    public String getTitle() {
@@ -48,7 +45,7 @@ public abstract class AMedia {
            c = c.concat(s) + ", ";
        }
 
-       return c.substring(0,c.length()-1);
+       return c.substring(0,c.length()-2);
    }
 
     @Override
