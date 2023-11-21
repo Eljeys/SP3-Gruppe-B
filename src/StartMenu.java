@@ -81,31 +81,58 @@ public class StartMenu extends AMenu{
     }
 
     private void createAccount() {
+        fileIO = new FileIO();
+        ArrayList<String> data = fileIO.readUserData("data/userData.txt");
+
         outerLoop:
         while (true) {
-            String username = textUI.getInput("Create username (Must begin with a letter): ");
+            String username = textUI.getInput("Create username (Must begin with a letter) or back to start menu (q): ");
 
             char firstCharacter = username.charAt(0);
-            if (!Character.isDigit(firstCharacter)) {
+            if (username.equalsIgnoreCase("q")) {
+                break;
+            } else if (!Character.isDigit(firstCharacter)) {
 
-                while (true) {
-                    String password = textUI.getInput("Create password (Minimum 8 characters): ");
+                boolean exist = false;
+                for (String s: data) {
+                    boolean userFound = s.toLowerCase().contains(username.toLowerCase());
+                    if (userFound) {
+                        exist = true;
+                        break;
+                    }
+                }
 
-                    if (password.length() >= 8) {
-                        fileIO = new FileIO();
-                        boolean userSavedToFile = fileIO.saveUserData("data/userData.txt", username, password);
+                if (exist) {
+                    String answer = textUI.getInput("Username already exists. Do you want to login? Y/N: ");
 
-                        if (!userSavedToFile) {
-                            textUI.displayMessage("Could not create an account.");
-                        } else {
-                            String answer = textUI.getInput("You have now created an account. Log in? Y/N: ");
-                            if (answer.equalsIgnoreCase("Y")) {
-                                user = new User(username,password);
-                            }
-                        }
-                        break outerLoop;
+                    if (answer.equalsIgnoreCase("Y")) {
+                        login();
                     } else {
-                        textUI.displayMessage("Must be minimum 8 characters long! Try again.");
+                        textUI.displayMessage("\nReturning you to Start Menu.");
+                    }
+                    break;
+                } else {
+                    while (true) {
+                        String password = textUI.getInput("Create password (Minimum 8 characters) or back to start menu (q): ");
+
+                        if (password.length() >= 8) {
+                            fileIO = new FileIO();
+                            boolean userSavedToFile = fileIO.saveUserData("data/userData.txt", username, password);
+
+                            if (!userSavedToFile) {
+                                textUI.displayMessage("Could not create an account.");
+                            } else {
+                                String answer = textUI.getInput("You have now created an account. Log in? Y/N: ");
+                                if (answer.equalsIgnoreCase("Y")) {
+                                    user = new User(username, password);
+                                }
+                            }
+                            break outerLoop;
+                        } else if (password.equalsIgnoreCase("q")) {
+                            break outerLoop;
+                        } else {
+                            textUI.displayMessage("Must be minimum 8 characters long! Try again.");
+                        }
                     }
                 }
             } else {

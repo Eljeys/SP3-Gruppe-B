@@ -46,7 +46,6 @@ public class MainMenu extends AMenu{
                         textUI.displayMessage("Not a Menu option!");
                         break;
                 }
-
             } catch (NumberFormatException e) {
                 textUI.displayMessage("Choose a number!");
             }
