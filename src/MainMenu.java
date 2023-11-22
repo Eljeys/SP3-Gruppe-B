@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 public class MainMenu extends AMenu{
+    private String[] category = {"Talk-show", "Documentary", "Crime", "Drama", "Action", "Adventure", "Drama", "Comedy", "Fantasy", "Animation", "Horror", "Sci-fi", "War", "Thriller", "Mystery", "Biography", "History", "Family", "Western", "Romance", "Sport"};
     private ArrayList<String> movieData = new ArrayList<>();
     private ArrayList<String> serieData = new ArrayList<>();
     private ArrayList<AMedia> listOfMedias = new ArrayList<>();
@@ -37,7 +38,6 @@ public class MainMenu extends AMenu{
 
             try {
                 int menuOption = Integer.parseInt(choice);
-
                 switch (menuOption) {
                     case 1:
                         String choiceMedia = "";
@@ -52,13 +52,13 @@ public class MainMenu extends AMenu{
                         }
                         displayAllMedia(searchMediaByTitle(choiceMedia));
                         String choiceTitle = textUI.getInput("Choose a media from the list!");
-                        int menuOpt3 = Integer.parseInt(choiceTitle);
+                        int menuOption2 = Integer.parseInt(choiceTitle);
                         ArrayList<AMedia> listOfChosenTitle = searchMediaByTitle(choiceMedia);
-                        AMedia chosenTitle = listOfChosenTitle.get(menuOpt3-1);
+                        AMedia chosenTitle = listOfChosenTitle.get(menuOption2-1);
                         if(Integer.parseInt(choiceTitle) > 0 &&  Integer.parseInt(choiceTitle) <= listOfTitles.size()) {
                             textUI.displayMessage("What do you want to do with '" + chosenTitle.getTitle() + "'");
                             textUI.displayMessage("""
-                                    Choose option:
+                                    
                                     1. Play media
                                     2. Save media to Favorites
                                     3. Remove media from Favorites
@@ -66,166 +66,57 @@ public class MainMenu extends AMenu{
                                     """);
                             String choice2 = textUI.getInput("choose an option: ");
                             try {
-                                int menuOpt1 = Integer.parseInt(choice2);
-                                switch (menuOpt1) {
-                                    case 1:
-                                        textUI.displayMessage(chosenTitle.getTitle() + " is now playing");
-                                        addToList(watchedList, chosenTitle);
-                                        break;
-                                    case 2:
-                                        textUI.displayMessage(chosenTitle.getTitle() + " has been added to your SavedList");
-                                        addToList(savedList, chosenTitle);
-                                        break;
-                                    case 3:
-                                        textUI.displayMessage(chosenTitle.getTitle() + " has been removed from your SaveList");
-                                        deleteFromList(savedList, chosenTitle);
-                                        break;
-                                    default:
-                                        textUI.displayMessage("Not a Menu option");
-                                        break;
-                                }
+                                playAddOrRemoveMenu(choice2,chosenTitle);
                             } catch (NumberFormatException e) {
                                 textUI.displayMessage("choose a number!");
                             }
                         }
                         break;
                     case 2:
-                        textUI.displayMessage("""
-                    
-                        1. Drama
-                        2. Crime
-                        3. War
-                        4. Family
-                        5. Sci-Fi
-                        6. Romance
-                        7. Adventure
-                        8. Biography
-                        9. Sport
-                        10. History
-                        11. Mystery
-                        12. Thriller
-                        13. Horror
-                        14. Action
-                        15. Western
-                        16. Musical
-                        17. Fantasy
-                        18. Comedy
-                        19. Music
-                        """);
-                        String choice1 = textUI.getInput("Choose an option");
+                        for (int i = 1; i < category.length+1; i++) {
+                            textUI.displayMessage(i + ". " + category[i-1]);
+                        }
+                        String chooseCategory = textUI.getInput("Choose a category");
+                        boolean validOption = false;
                         try {
-                            int choice1Int = Integer.parseInt(choice1);
-                            switch (choice1Int) {
-                                case 1:
-                                    displayMediaByCategory(searchMediaByCategory("Drama"), "Drama");
-                                    break;
-                                case 2:
-                                    displayMediaByCategory(searchMediaByCategory("Crime"), "Crime");
-                                    break;
-                                case 3:
-                                    displayMediaByCategory(searchMediaByCategory("War"), "War");
-                                    break;
-                                case 4:
-                                    displayMediaByCategory(searchMediaByCategory("Family"), "Family");
-                                    break;
-                                case 5:
-                                    displayMediaByCategory(searchMediaByCategory("Sci-Fi"), "Sci-Fi");
-                                    break;
-                                case 6:
-                                    displayMediaByCategory(searchMediaByCategory("Romance"), "Romance");
-                                    break;
-                                case 7:
-                                    displayMediaByCategory(searchMediaByCategory("Adventure"), "Adventure");
-                                    break;
-                                case 8:
-                                    displayMediaByCategory(searchMediaByCategory("Biography"), "Biography");
-                                    break;
-                                case 9:
-                                    displayMediaByCategory(searchMediaByCategory("Sport"), "Sport");
-                                    break;
-                                case 10:
-                                    displayMediaByCategory(searchMediaByCategory("History"), "History");
-                                    break;
-                                case 11:
-                                    displayMediaByCategory(searchMediaByCategory("Mystery"), "Mystery");
-                                    break;
-                                case 12:
-                                    displayMediaByCategory(searchMediaByCategory("Thriller"), "Thriller");
-                                    break;
-                                case 13:
-                                    displayMediaByCategory(searchMediaByCategory("Horror"), "Horror");
-                                    break;
-                                case 14:
-                                    displayMediaByCategory(searchMediaByCategory("Action"), "Action");
-                                    break;
-                                case 15:
-                                    displayMediaByCategory(searchMediaByCategory("Western"), "Western");
-                                    break;
-                                case 16:
-                                    displayMediaByCategory(searchMediaByCategory("Musical"), "Musical");
-                                    break;
-                                case 17:
-                                    displayMediaByCategory(searchMediaByCategory("Fantasy"), "Fantasy");
-                                    break;
-                                case 18:
-                                    displayMediaByCategory(searchMediaByCategory("Comedy"), "Comedy");
-                                    break;
-                                case 19:
-                                    displayMediaByCategory(searchMediaByCategory("Music"), "Music");
-                                    break;
-                                default:
-                                    textUI.displayMessage("Not a menu option!");
-                                    break;
+                            int menuOption4 = Integer.parseInt(chooseCategory);
+                            if(menuOption4 >= 1 && menuOption4 <= (category.length)) {
+                                displayMediaByCategory(searchMediaByCategory(category[menuOption4-1]), category[menuOption4-1]);
+                                validOption = true;
+                            } else {
+                                textUI.displayMessage("Not a menu option!");
                             }
                         } catch (NumberFormatException e) {
                             textUI.displayMessage("Choose a number!");
                         }
-                        String choiceCategory = textUI.getInput("Choose a media from the list!");
-                        int menuOpt4 = Integer.parseInt(choiceCategory);
-                        AMedia chosenMedia = mediasByCategory.get(menuOpt4-1);
-                        if(Integer.parseInt(choiceCategory) > 0 &&  Integer.parseInt(choiceCategory) <= mediasByCategory.size()) {
-                            textUI.displayMessage("What do you want to do with '"+chosenMedia.getTitle()+"'");
-                            textUI.displayMessage("""
-                                                                        
-                                    1. Play media
-                                    2. Save media to Favorites
-                                    3. Remove media from Favorites
-                                                                       
-                                    """);
-                            String choiceMediaCategory = textUI.getInput("Choose option");
-                            try {
-                                int menuOpt2 = Integer.parseInt(choiceMediaCategory);
-                                switch (menuOpt2) {
-                                    case 1:
-                                        textUI.displayMessage(chosenMedia.getTitle()+" is now playing");
-                                        addToList(watchedList, chosenMedia);
-                                        break;
-                                    case 2:
-                                        textUI.displayMessage(chosenMedia.getTitle()+" has been added to your SavedList");
-                                        addToList(savedList, chosenMedia);
-                                        break;
-                                    case 3:
-                                        textUI.displayMessage(chosenMedia.getTitle()+" has been removed from your SaveList");
-                                        deleteFromList(savedList, chosenMedia);
-                                        break;
-                                    default:
-                                        textUI.displayMessage("Not a Menu option");
-                                        break;
+                        if(validOption) {
+                            String choiceCategory = textUI.getInput("Choose a media from the list!");
+                            int menuOption5 = Integer.parseInt(choiceCategory);
+                            AMedia chosenMedia = mediasByCategory.get(menuOption5 - 1);
+                            if (menuOption5 > 0 && menuOption5 <= mediasByCategory.size()) {
+                                textUI.displayMessage("What do you want to do with '" + chosenMedia.getTitle() + "'");
+                                textUI.displayMessage("""
+                                                                            
+                                        1. Play media
+                                        2. Save media to Favorites
+                                        3. Remove media from Favorites
+                                                                           
+                                        """);
+                                String choiceMediaCategory = textUI.getInput("Choose an option");
+                                try {
+                                    playAddOrRemoveMenu(choiceMediaCategory,chosenMedia);
+                                } catch (NumberFormatException e) {
+                                    textUI.displayMessage("Choose a number!");
                                 }
-                            } catch (NumberFormatException e) {
-                                textUI.displayMessage("Choose a number!");
                             }
                         }
                         break;
                     case 3:
-                        // see list of watched Series And Movies
                         textUI.displayMessage("WatchList Of Medias\n");
                         showList(watchedList);
                         break;
                     case 4:
                         textUI.displayMessage("List Of Saved Medias\n");
-                        //displayAllMedia(List.savedList);
-                        //See list of favorites
                         showList(savedList);
                         break;
                     case 5:
@@ -242,27 +133,43 @@ public class MainMenu extends AMenu{
             }
         }
     }
-
-    private void addToList(List list, AMedia media) {
-        boolean isAdded = list.addMedia(media);
-        if(isAdded) {
-            textUI.displayMessage("Added to the list.");
-        } else {
-            textUI.displayMessage("Already on the list!");
+    private void playAddOrRemoveMenu(String choice, AMedia chosenMedia) {
+        int menuOption = Integer.parseInt(choice);
+        switch (menuOption) {
+            case 1:
+                textUI.displayMessage(chosenMedia.getTitle() + " is now playing");
+                addToList(watchedList, chosenMedia, chosenMedia.getTitle());
+                break;
+            case 2:
+                addToList(savedList, chosenMedia, chosenMedia.getTitle());
+                break;
+            case 3:
+                deleteFromList(savedList, chosenMedia, chosenMedia.getTitle());
+                break;
+            default:
+                textUI.displayMessage("Not a Menu option");
+                break;
         }
     }
-    private void deleteFromList(List list, AMedia media) {
+    private void addToList(List list, AMedia media, String chosenMedia) {
+        boolean isAdded = list.addMedia(media);
+        if(isAdded) {
+            textUI.displayMessage(chosenMedia + " has been added to your SaveList");
+        } else {
+            textUI.displayMessage(chosenMedia + " is already on the list!");
+        }
+    }
+    private void deleteFromList(List list, AMedia media, String chosenMedia) {
         boolean isRemoved = list.deleteMedia(media);
         if(isRemoved) {
-            textUI.displayMessage("Removed from the list.");
+            textUI.displayMessage( chosenMedia + " has been removed from the list.");
         } else {
-            textUI.displayMessage("Not on the list!");
+            textUI.displayMessage( chosenMedia + " is not on the list!");
         }
     }
 
     private void showList(List list) {
         ArrayList<AMedia> medias = list.getMediaList();
-
         int counter = 1;
         for (AMedia m: medias) {
             textUI.displayMessage(counter + ": (" + m.getMediaType() + ") " + m.getTitle() + "; " + m.getReleaseYear());
