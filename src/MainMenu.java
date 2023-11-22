@@ -65,6 +65,7 @@ public class MainMenu extends AMenu{
                                     """);
                             String choice2 = textUI.getInput("choose an option: ");
                             try {
+
                                 playAddOrRemoveMenu(choice2,chosenTitle);
                             } catch (NumberFormatException e) {
                                 textUI.displayMessage("choose a number!");
@@ -163,7 +164,43 @@ public class MainMenu extends AMenu{
         int menuOption = Integer.parseInt(choice);
         switch (menuOption) {
             case 1:
-                textUI.displayMessage(chosenMedia.getTitle() + " is now playing");
+                if (chosenMedia.getMediaType().equalsIgnoreCase("Series")) {
+                    AMedia<Series> s = (Series) chosenMedia.getMediaData();
+                    ArrayList<Season> season = s.getMediaData().getSeasons();
+                    int count;
+                    count = 0;
+                    for (Season g : season) {
+                        count++;
+                        System.out.println(count + ". Season " + g.getSeasonNumber() + ", " + g.getNumberOfEpisodes() + " episodes");
+                    }
+                    String choice2 = textUI.getInput("Choose a season!");
+                    try {
+                        int choice3 = Integer.parseInt(choice2);
+                        if (choice3 >= 1 && choice3 <= season.size()) {
+                            int numberOfEpisodes = season.get(choice3-1).getNumberOfEpisodes();
+                            for (int j = 1; j <= numberOfEpisodes; j++) {
+                                textUI.displayMessage(j + ". Episode ");
+                            }
+                            String episode = textUI.getInput("choose an episode!");
+                            try {
+                                int choice4 = Integer.parseInt(episode);
+                                if (choice4 >= 1 && choice4 <= numberOfEpisodes) {
+                                    textUI.displayMessage(chosenMedia.getTitle() + ", Season " + choice3 + ", Episode " + episode + " is now playing!");
+                                } else {
+                                    textUI.displayMessage("input not valid");
+                                }
+                            } catch (NumberFormatException e) {
+                                textUI.displayMessage("Choose a number!");
+                            }
+                        } else {
+                            textUI.displayMessage("not a valid season");
+                        }
+                    } catch (NumberFormatException e) {
+                        textUI.displayMessage("Choose a number!");
+                    }
+                } else {
+                    textUI.displayMessage(chosenMedia.getTitle() + " is now playing");
+                }
                 addToList(listOfWatchedMedia, chosenMedia, chosenMedia.getTitle());
                 break;
             case 2:

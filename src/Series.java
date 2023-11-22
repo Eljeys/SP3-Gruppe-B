@@ -71,13 +71,15 @@ public class Series extends AMedia <Series> {
     }
 
     public ArrayList<Season> getSeasons() {
+        if(!seasons.isEmpty()) {
+            seasons.clear();
+        }
         //Arraylist<String> seasonsAndEpisodes:
         //"1-13", "2-13", "3-13", "4-13", "5-13", "6-21"
         for (String s : seasonAndEpisodes) {
             Season season = new Season(s);
             seasons.add(season);
         }
-
         return seasons;
     }
 
@@ -91,6 +93,6 @@ public class Series extends AMedia <Series> {
         return getMediaType() +
                 super.toString() +
                 "\nEnding Year: " + getEndingYear() +
-                "\nTotal number Of Seasons: " + getSeasons().size();
+                "\nTotal number Of Seasons: " + seasons.size();
     }
 }
