@@ -1,13 +1,12 @@
 import java.util.ArrayList;
 
 public interface Database {
-    ArrayList<String> readUserData(String path);
+    ArrayList<String> loadUserData(String path);
     boolean saveUserData(String path, String username, String password);
 
-    ArrayList<String> readMediaData(String path);
+    ArrayList<String> loadMediaData(String path);
 
-    ArrayList<AMedia> getListOfMovies(ArrayList<String> readMovieData);
-    ArrayList<AMedia> getListOfSeries(ArrayList<String> readMovieData);
+    boolean saveListData(User user, String listType, ArrayList<AMedia<?>> listData);
 
-    boolean saveListData(String listType, ArrayList<String> mediaData, ArrayList<AMedia> listData);
+    ArrayList<AMedia<?>> loadListData(User user, String listType);
 }

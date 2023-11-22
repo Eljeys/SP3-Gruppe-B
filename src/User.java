@@ -1,8 +1,8 @@
-import java.util.ArrayList;
-
 public class User {
     private String username;
     private String password;
+    private List listOfWatchedMedia = new ListOfWatchedMedia();
+    private List listOfFavorites = new ListOfFavorites();
 
     public User(String username, String password) {
         this.username = username;
@@ -28,10 +28,14 @@ public class User {
     public List getList(String listType) {
         List list = null;
 
-        if (listType.equalsIgnoreCase("watched")) {
-            list = new WatchedList();
-        } else if (listType.equalsIgnoreCase("saved")) {
-            list = new SavedList();
+        if (listType.equalsIgnoreCase(listOfWatchedMedia.getListType())) {
+            list = listOfWatchedMedia;
+        } else if (listType.equalsIgnoreCase(listOfFavorites.getListType())) {
+            list = listOfFavorites;
+        }
+
+        if (list != null) {
+            list.loadList(this);
         }
 
         return list;

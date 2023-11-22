@@ -1,34 +1,38 @@
-import javax.print.attribute.standard.Media;
 import java.util.ArrayList;
 
-public abstract class AMedia {
+public abstract class AMedia <T> {
     private Database io;
+    private String info;
     private String title;
     private String releaseYear;
     private double rating;
     private ArrayList<String> categories;
 
-    public AMedia(String title, String releaseYear, double rating, ArrayList<String> categories) {
-        this.title = title;
-        this.releaseYear = releaseYear;
-        this.rating = rating;
-        this.categories = categories;
+    public AMedia(String mediaData) {
+        this.info = mediaData;
+        setMediaData();
     }
 
-   abstract void play();
+    abstract void setMediaData();
+    abstract T getMediaData();
 
-   public void saveToList(User user, String listType, AMedia media) {
-       List list = user.getList(listType);
-       list.addMedia(media);
-   }
+    abstract void play();
 
-   public void removeFromList(User user, String listType, AMedia media) {
-      List list = user.getList(listType);
-      list.deleteMedia(media);
-   }
+    public String getInfo() {
+        return info;
+    }
+
+    public void saveToList(User user, String listType, AMedia<?> media) {
+        List list = user.getList(listType);
+        list.addMedia(media);
+    }
+
+    public void removeFromList(User user, String listType, AMedia<?> media) {
+        List list = user.getList(listType);
+        list.deleteMedia(media);
+    }
 
    abstract String getMediaType();
-
    public String getTitle() {
        return title;
    }
@@ -39,7 +43,23 @@ public abstract class AMedia {
        return rating;
    }
 
-   public String getCategories() {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setReleaseYear(String releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public void setCategories(ArrayList<String> categories) {
+        this.categories = categories;
+    }
+
+    public String getCategories() {
        String c = "";
        for (String s: categories) {
            c = c.concat(s) + ", ";

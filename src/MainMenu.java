@@ -2,26 +2,25 @@ import java.util.ArrayList;
 
 public class MainMenu extends AMenu{
     private String[] category = {"Talk-show", "Documentary", "Crime", "Drama", "Action", "Adventure", "Drama", "Comedy", "Fantasy", "Animation", "Horror", "Sci-fi", "War", "Thriller", "Mystery", "Biography", "History", "Family", "Western", "Romance", "Sport"};
-    private ArrayList<String> movieData = new ArrayList<>();
-    private ArrayList<String> serieData = new ArrayList<>();
-    private ArrayList<AMedia> listOfMedias = new ArrayList<>();
-    private ArrayList<AMedia> listOfSeries = new ArrayList<>();
-    private ArrayList<AMedia> listOfTitles = new ArrayList<>();
+    private ArrayList<AMedia<?>> mediaLibrary = new ArrayList<>();
+    private ArrayList<AMedia<?>> listOfTitles = new ArrayList<>();
 
-    private ArrayList<AMedia> mediasByCategory;
+    private ArrayList<AMedia<?>> mediasByCategory;
     private User user;
-    private List watchedList;
-    private List savedList;
+    private List listOfWatchedMedia;
+    private List listOfFavorites;
 
     public MainMenu(User user) {
         this.user = user;
-        watchedList = user.getList("watched");
-        savedList = user.getList("saved");
+        listOfWatchedMedia = user.getList("watched");
+        listOfFavorites = user.getList("favorites");
+        loadLibrary();
     }
 
     @Override
     void display() {
         textUI.displayMessage("\nWelcome " + user.getUsername()+"!");
+
         boolean chooseOption = true;
         while (chooseOption) {
             textUI.displayMessage("""
@@ -53,8 +52,8 @@ public class MainMenu extends AMenu{
                         displayAllMedia(searchMediaByTitle(choiceMedia));
                         String choiceTitle = textUI.getInput("Choose a media from the list!");
                         int menuOption2 = Integer.parseInt(choiceTitle);
-                        ArrayList<AMedia> listOfChosenTitle = searchMediaByTitle(choiceMedia);
-                        AMedia chosenTitle = listOfChosenTitle.get(menuOption2-1);
+                        ArrayList<AMedia<?>> listOfChosenTitle = searchMediaByTitle(choiceMedia);
+                        AMedia<?> chosenTitle = listOfChosenTitle.get(menuOption2-1);
                         if(Integer.parseInt(choiceTitle) > 0 &&  Integer.parseInt(choiceTitle) <= listOfTitles.size()) {
                             textUI.displayMessage("What do you want to do with '" + chosenTitle.getTitle() + "'");
                             textUI.displayMessage("""
@@ -92,7 +91,7 @@ public class MainMenu extends AMenu{
                         if(validOption) {
                             String choiceCategory = textUI.getInput("Choose a media from the list!");
                             int menuOption5 = Integer.parseInt(choiceCategory);
-                            AMedia chosenMedia = mediasByCategory.get(menuOption5 - 1);
+                            AMedia<?> chosenMedia = mediasByCategory.get(menuOption5 - 1);
                             if (menuOption5 > 0 && menuOption5 <= mediasByCategory.size()) {
                                 textUI.displayMessage("What do you want to do with '" + chosenMedia.getTitle() + "'");
                                 textUI.displayMessage("""
@@ -113,14 +112,15 @@ public class MainMenu extends AMenu{
                         break;
                     case 3:
                         textUI.displayMessage("WatchList Of Medias\n");
-                        showList(watchedList);
+                        showList(listOfWatchedMedia);
                         break;
                     case 4:
                         textUI.displayMessage("List Of Saved Medias\n");
-                        showList(savedList);
+                        showList(listOfFavorites);
                         break;
                     case 5:
                         //logout
+                        saveToDB();
                         user = null;
                         chooseOption = false;
                         break;
@@ -133,25 +133,52 @@ public class MainMenu extends AMenu{
             }
         }
     }
-    private void playAddOrRemoveMenu(String choice, AMedia chosenMedia) {
+
+    private void saveToDB() {
+        if (listOfWatchedMedia != null) {
+            listOfWatchedMedia.saveList(user);
+        }
+
+        if (listOfFavorites != null) {
+            listOfFavorites.saveList(user);
+        }
+    }
+
+    private void loadLibrary() {
+        ArrayList<String> movieData = fileIO.loadMediaData("data/100bedstefilm.txt");
+        ArrayList<String> serieData = fileIO.loadMediaData( "data/100bedsteserier.txt");
+
+        for (String s: movieData) {
+            AMedia<Movie> movie = new Movie(s);
+            mediaLibrary.add(movie);
+        }
+
+        for (String s: serieData) {
+            AMedia<Series> series = new Series(s);
+            mediaLibrary.add(series);
+        }
+    }
+
+    private void playAddOrRemoveMenu(String choice, AMedia<?> chosenMedia) {
         int menuOption = Integer.parseInt(choice);
         switch (menuOption) {
             case 1:
                 textUI.displayMessage(chosenMedia.getTitle() + " is now playing");
-                addToList(watchedList, chosenMedia, chosenMedia.getTitle());
+                addToList(listOfWatchedMedia, chosenMedia, chosenMedia.getTitle());
                 break;
             case 2:
-                addToList(savedList, chosenMedia, chosenMedia.getTitle());
+                addToList(listOfFavorites, chosenMedia, chosenMedia.getTitle());
                 break;
             case 3:
-                deleteFromList(savedList, chosenMedia, chosenMedia.getTitle());
+                deleteFromList(listOfFavorites, chosenMedia, chosenMedia.getTitle());
                 break;
             default:
                 textUI.displayMessage("Not a Menu option");
                 break;
         }
     }
-    private void addToList(List list, AMedia media, String chosenMedia) {
+
+    private void addToList(List list, AMedia<?> media, String chosenMedia) {
         boolean isAdded = list.addMedia(media);
         if(isAdded) {
             textUI.displayMessage(chosenMedia + " has been added to your SaveList");
@@ -159,7 +186,7 @@ public class MainMenu extends AMenu{
             textUI.displayMessage(chosenMedia + " is already on the list!");
         }
     }
-    private void deleteFromList(List list, AMedia media, String chosenMedia) {
+    private void deleteFromList(List list, AMedia<?> media, String chosenMedia) {
         boolean isRemoved = list.deleteMedia(media);
         if(isRemoved) {
             textUI.displayMessage( chosenMedia + " has been removed from the list.");
@@ -169,29 +196,19 @@ public class MainMenu extends AMenu{
     }
 
     private void showList(List list) {
-        ArrayList<AMedia> medias = list.getMediaList();
+        ArrayList<AMedia<?>> medias = list.getAllMedias();
         int counter = 1;
-        for (AMedia m: medias) {
+        for (AMedia<?> m: medias) {
             textUI.displayMessage(counter + ": (" + m.getMediaType() + ") " + m.getTitle() + "; " + m.getReleaseYear());
             counter++;
         }
     }
 
-    ArrayList<AMedia> getListOfMedias() {
-        movieData = fileIO.readMediaData("data/100bedstefilm.txt");
-        serieData = fileIO.readMediaData( "data/100bedsteserier.txt");
-
-        listOfMedias = fileIO.getListOfMovies(movieData);
-        listOfSeries = fileIO.getListOfSeries(serieData);
-        listOfMedias.addAll(listOfSeries);
-        return listOfMedias;
-    }
 
 
-    public ArrayList<AMedia> searchMediaByCategory(String category) {
-        ArrayList<AMedia> medias = getListOfMedias();
+    public ArrayList<AMedia<?>> searchMediaByCategory(String category) {
         mediasByCategory = new ArrayList<>();
-        for (AMedia m : medias) {
+        for (AMedia<?> m : mediaLibrary) {
             String categories = m.getCategories();
             if (categories.toLowerCase().contains(category.toLowerCase())) {
                 mediasByCategory.add(m);
@@ -200,10 +217,9 @@ public class MainMenu extends AMenu{
         return mediasByCategory;
     }
 
-    public ArrayList<AMedia> searchMediaByTitle(String title) {
-        ArrayList<AMedia> medias = getListOfMedias();
+    public ArrayList<AMedia<?>> searchMediaByTitle(String title) {
         listOfTitles = new ArrayList<>();
-        for(AMedia m: medias) {
+        for(AMedia<?> m: mediaLibrary) {
             if(m.getTitle().equalsIgnoreCase(title)) {
                 listOfTitles.add(m);
             }
@@ -211,27 +227,26 @@ public class MainMenu extends AMenu{
         return listOfTitles;
     }
     boolean doesTitleExistInMedia(String chooseMedia) {
-        ArrayList<AMedia> listOfMedias = getListOfMedias();
-        for(AMedia m: listOfMedias) {
+        for(AMedia<?> m: mediaLibrary) {
             if(m.getTitle().equalsIgnoreCase(chooseMedia)) {
                 return true;
             }
         }
         return false;
     }
-    void displayMediaByCategory(ArrayList<AMedia> listOfMedias, String category) {
+    void displayMediaByCategory(ArrayList<AMedia<?>> listOfMedias, String category) {
         int count = 0;
         textUI.displayMessage("I have found "+listOfMedias.size()+" medias with "+category+" as category");
-        for(AMedia m: listOfMedias) {
+        for(AMedia<?> m: listOfMedias) {
             count++;
             textUI.displayMessage(count+"\n"+m.toString());
         }
 
     }
 
-    void displayAllMedia(ArrayList<AMedia> listOfMedias) {
+    void displayAllMedia(ArrayList<AMedia<?>> listOfMedias) {
         int count = 0;
-        for(AMedia m: listOfMedias) {
+        for(AMedia<?> m: listOfMedias) {
             count++;
             System.out.println(count+"\n"+m.toString());
         }

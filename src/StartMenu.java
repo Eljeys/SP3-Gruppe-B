@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 
-public class StartMenu extends AMenu{
+public class StartMenu extends AMenu {
     @Override
     void display() {
         boolean chooseInput = true;
-        while(chooseInput) {
+        while (chooseInput) {
             textUI.displayMessage("""
 
                     START MENU:
@@ -47,7 +47,7 @@ public class StartMenu extends AMenu{
 
     private void login() {
         fileIO = new FileIO();
-        ArrayList<String> data = fileIO.readUserData("data/userData.txt");
+        ArrayList<String> data = fileIO.loadUserData("data/userData.txt");
 
         if (!data.isEmpty()) {
             outerLoop:
@@ -87,8 +87,8 @@ public class StartMenu extends AMenu{
                             }
                         }
                     }
-                    }
                 }
+            }
         } else {
             textUI.displayMessage("Could not login.");
         }
@@ -96,7 +96,7 @@ public class StartMenu extends AMenu{
 
     private void createAccount() {
         fileIO = new FileIO();
-        ArrayList<String> data = fileIO.readUserData("data/userData.txt");
+        ArrayList<String> data = fileIO.loadUserData("data/userData.txt");
 
         outerLoop:
         while (true) {
@@ -108,7 +108,7 @@ public class StartMenu extends AMenu{
             } else if (!Character.isDigit(firstCharacter)) {
 
                 boolean exist = false;
-                for (String s: data) {
+                for (String s : data) {
                     boolean userFound = s.toLowerCase().contains(username.toLowerCase());
                     if (userFound) {
                         exist = true;
@@ -155,7 +155,7 @@ public class StartMenu extends AMenu{
         }
     }
 
-    public User userLoggedin() {
+    public User getUserAccount() {
         return user;
     }
 }

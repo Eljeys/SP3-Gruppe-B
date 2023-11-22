@@ -1,13 +1,10 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class FileIO implements Database{
+public class FileIO implements Database {
 
-    public ArrayList<String> readUserData(String path) {
+    public ArrayList<String> loadUserData(String path) {
         ArrayList<String> data = new ArrayList<>();
 
         File file = new File(path);
@@ -28,8 +25,8 @@ public class FileIO implements Database{
 
     public boolean saveUserData(String path, String username, String password) {
         try {
-            FileWriter writer = new FileWriter(path,true);
-            String textToSave = "\n"+username + "," + password;
+            FileWriter writer = new FileWriter(path, true);
+            String textToSave = "\n" + username + "," + password;
             writer.write(textToSave);
             writer.close();
         } catch (IOException e) {
@@ -38,7 +35,7 @@ public class FileIO implements Database{
         return true;
     }
 
-    public ArrayList<String> readMediaData(String path) {
+    public ArrayList<String> loadMediaData(String path) {
         ArrayList<String> movieData = new ArrayList<>();
         File filmFile = new File(path);
         try {
@@ -53,79 +50,15 @@ public class FileIO implements Database{
         return movieData;
     }
 
-    public ArrayList<AMedia> getListOfMovies(ArrayList<String> readMovieData) {
-        ArrayList<String> categories;
-        ArrayList<AMedia> listOfMovies = new ArrayList<>();
-        for(String m: readMovieData) {
-            String[] row = m.split(";");
-            String title = row[0].trim();
-            String releaseYear = row[1].trim();
-            String r = row[3].trim().replace(',','.');
-            double rating = Double.parseDouble(r);
-            String c = row[2].trim();
-            String[] category = c.split(",");
-            categories = new ArrayList<>();
-            for(String s: category) {
-                categories.add(s.trim());
-            }
-            listOfMovies.add(new Movie(title,releaseYear,rating,categories));
-
-        }
-        return listOfMovies;
-    }
-
-    public ArrayList<AMedia> getListOfSeries(ArrayList<String> readSeriesData) {
-        ArrayList<String> categories;
-        ArrayList<String> seasonsAndEpisodes;
-        ArrayList<AMedia> listOfSeries = new ArrayList<>();
-        String releaseYear = "";
-        String endingYear = "";
-        for(String m: readSeriesData) {
-            String[] row = m.split(";");
-            String title = row[0].trim();
-            if(row[1].trim().length() == 4) {
-                releaseYear = row[1].trim();
-                endingYear = releaseYear;
-            } else if(row[1].trim().length() == 5) {
-                releaseYear = row[1].trim().substring(0,4); // Her tager jeg de f�rste 5 karakterer og trimmer og f�r derved �rstallet
-                endingYear = "-";
-            } else if(row[1].trim().length() >=9) {
-                String[] year = row[1].split("-");
-                releaseYear = year[0].trim();
-                endingYear = year[1].trim();
-            }
-            String c = row[2].trim();
-            String[] category = c.split(",");
-            categories = new ArrayList<>();
-            for(String s: category) {
-                categories.add(s.trim());
-            }
-
-            String r = row[3].trim().replace(',','.');
-            double rating = Double.parseDouble(r);
-
-            String season = row[4].trim();
-            String[] seasons = season.split(",");
-            seasonsAndEpisodes = new ArrayList<>();
-            for(String s: seasons) {
-                seasonsAndEpisodes.add(s.trim());
-            }
-            listOfSeries.add(new Series(title,releaseYear,endingYear,categories,rating,seasonsAndEpisodes));
-
-        }
-        return listOfSeries;
-    }
-
-    public boolean saveListData(String listType, ArrayList<String> mediaData, ArrayList<AMedia> listData){
+    public boolean saveListData(User user, String listType, ArrayList<AMedia<?>> listData) {
         try {
-            FileWriter writer = new FileWriter("data/" + listType+ ".txt");
+            FileOutputStream writer = new FileOutputStream("data/" + user.getUsername() + listType + "List.txt");
 
-            for (AMedia m: listData) {
-                for (String s : mediaData) {
-                    if (s.toLowerCase().contains(m.getTitle().toLowerCase())) {
-                        writer.write(s + "\n");
-                    }
-                }
+            String newLine = "";
+            for (AMedia<?> m : listData) {
+                String test = newLine + m.getInfo();
+                writer.write(test.getBytes());
+                newLine = "\n";
             }
 
             writer.close();
@@ -135,4 +68,31 @@ public class FileIO implements Database{
         return true;
     }
 
+    public ArrayList<AMedia<?>> loadListData(User user, String listType) {
+        ArrayList<AMedia<?>> medias = new ArrayList<>();
+        ArrayList<String> data = loadMediaData("data/" + user.getUsername() + listType + "List.txt");
+
+        ArrayList<String> allMovies = loadMediaData("data/100bedstefilm.txt");
+        ArrayList<String> allSeries = loadMediaData("data/100bedsteserier.txt");
+
+        if (data != null) {
+            for (String info : data) {
+                for (String movieData: allMovies) {
+                    if (info.equals(movieData)) {
+                        AMedia<Movie> movie = new Movie(movieData);
+                        medias.add(movie);
+                    }
+                }
+
+                for (String seriesData: allSeries) {
+                    if (info.equals(seriesData)) {
+                        AMedia<Series> series = new Series(seriesData);
+                        medias.add(series);
+                    }
+                }
+            }
+        }
+
+        return medias;
+    }
 }

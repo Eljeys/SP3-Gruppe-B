@@ -4,8 +4,6 @@ public class Season {
     private int seasonNumber;
     private int numberOfEpisodes;
 
-    //private String seasonsAndEpisodes;
-
     public Season(String seasonAndEpisode) {
         //"1-13"
         String[] numbers = seasonAndEpisode.split("-");
