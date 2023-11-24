@@ -12,6 +12,9 @@ public class MediaMenu extends AMenu{
         this.menuChoice = "";
     }
 
+    /**
+     * Displays the actions for the chosen AMedia object
+     */
     @Override
     public void display() {
         textUI.displayMessage("\n"+media.toString() + "\n");
@@ -39,6 +42,11 @@ public class MediaMenu extends AMenu{
         }
     }
 
+    /**
+     * Does something to the given media object depending on the choice
+     * @param chosenMedia The chosen AMedia object
+     * @param choice The chosen action as an int
+     */
     private void playAddOrRemoveMenu(int choice, AMedia chosenMedia) {
         switch (choice) {
             case 1:
@@ -58,6 +66,10 @@ public class MediaMenu extends AMenu{
         }
     }
 
+    /**
+     * Plays the chosen media object
+     * @param chosenMedia The given AMedia object
+     */
     private void playChosenMedia(AMedia chosenMedia) {
         if (chosenMedia.getType().equalsIgnoreCase("movie")) {
             textUI.displayMessage(chosenMedia.play());
@@ -73,6 +85,12 @@ public class MediaMenu extends AMenu{
         }
     }
 
+    /**
+     * The user can choose a season to watch from the given Series object.
+     * The String returned determines whether to continue or exit a loop
+     * @param chosenSeries The given Series object
+     * @return "", "q" or "exit"
+     */
     private String chooseSeason(Series chosenSeries) {
         String action = "";
         ArrayList<Season> allSeasons = chosenSeries.getAllSeasons();
@@ -110,6 +128,13 @@ public class MediaMenu extends AMenu{
         return action;
     }
 
+    /**
+     * The user can choose an episode to watch from the given Season object
+     * The String returned determines whether to continue or exit a loop
+     * @param season The given Season object
+     * @param title Title of the given Series object as a String
+     * @return "", "q" or "exit"
+     */
     private String chooseEpisode(Season season, String title) {
         String action = "";
         int numberOfEpisodes = season.getNumberOfEpisodes();
@@ -146,6 +171,9 @@ public class MediaMenu extends AMenu{
         return action;
     }
 
+    /**
+     * Waits for the user to enter q
+     */
     private void waitToReturn() {
         while (true) {
             String action = textUI.getInput("\nEnter (q) to go back: ");
@@ -155,6 +183,12 @@ public class MediaMenu extends AMenu{
         }
     }
 
+    /**
+     * Adds the given media object to the given list.
+     * If list if of type Favorite then it displays if it's added or already on.
+     * @param list A given List object
+     * @param media A given AMedia object
+     */
     private void addToList(List list, AMedia media) {
         boolean added = list.addMedia(media);
         if (!list.getListType().equalsIgnoreCase("watched")) {
@@ -166,6 +200,12 @@ public class MediaMenu extends AMenu{
         }
     }
 
+    /**
+     * Deletes the given media object from the given list.
+     * Displays if the media object has been removed if it on the given list.
+     * @param list A given List object
+     * @param media A given AMedia object
+     */
     private void deleteFromList(List list, AMedia media) {
         boolean removed = list.deleteMedia(media);
         if (removed) {
@@ -175,10 +215,19 @@ public class MediaMenu extends AMenu{
         }
     }
 
+    /**
+     * Gets the menu choice
+     * The String returned determines what loop to exit
+     * @return "q" or "exit"
+     */
     public String getMenuChoice() {
         return menuChoice;
     }
 
+    /**
+     * Sets the menu choice
+     * @param menuChoice The menu choice as a String
+     */
     private void setMenuChoice(String menuChoice) {
         this.menuChoice = menuChoice;
     }
