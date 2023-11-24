@@ -9,6 +9,10 @@ public class Series extends AMedia {
         super(data);
     }
 
+    /**
+     * Splits all the data that's passed as a String when creating a Series object.
+     * Sets all the information for the Series object.
+     */
     @Override
     public void setAllInformation() {
         seasonsAndEpisodes = new ArrayList<>();
@@ -56,9 +60,12 @@ public class Series extends AMedia {
         loadSeasons();
     }
 
+    /**
+     * Loads all seasons from the series and add to allSeasons array list
+     */
     private void loadSeasons() {
         allSeasons = new ArrayList<>();
-        //Arraylist<String> seasonsAndEpisodes:
+
         //"1-13", "2-13", "3-13", "4-13", "5-13", "6-21"
         for (String s : seasonsAndEpisodes) {
             Season season = new Season(s);
@@ -66,19 +73,35 @@ public class Series extends AMedia {
         }
     }
 
+    /**
+     * Gets the type of object which is Series
+     * @return The type as a String
+     */
     @Override
     public String getType() {
         return "SERIES";
     }
 
+    /**
+     * Gets the ending year of a Series
+     * @return the ending year as a String
+     */
     public String getEndingYear() {
         return endingYear;
     }
 
+    /**
+     * Gets all the seasons in a series
+     * @return Array list of all seasons
+     */
     public ArrayList<Season> getAllSeasons() {
         return allSeasons;
     }
 
+    /**
+     * Display Series object a certain way
+     * @return The String to display
+     */
     @Override
     public String toString() {
         return getType() +

@@ -1,0 +1,218 @@
+@startuml
+class Main {
++ {static} void main(String[])
+}
+
+class Program {
++ void run()
+}
+
+class TextUI {
++ String getInput(String)
++ void displayMessage(String)
++ void displayErrorMessage(String)
+}
+
+interface Database {
+~ ArrayList<String> loadAllUsers(String)
+~ boolean saveUserData(String,String,String)
+~ ArrayList<String> loadAllMedias(String)
+~ boolean saveListData(User,String,ArrayList<AMedia>)
+~ ArrayList<AMedia> loadListData(User,String)
+}
+
+class FileIO {
++ ArrayList<String> loadAllUsers(String)
++ boolean saveUserData(String,String,String)
++ ArrayList<String> loadAllMedias(String)
++ boolean saveListData(User,String,ArrayList<AMedia>)
++ ArrayList<AMedia> loadListData(User,String)
+}
+
+class User {
+- String username
+- String password
+- List listOfWatchedMedia
+- List listOfFavorites
++ String getUsername()
++ void setUsername(String)
++ String getPassword()
++ void setPassword(String)
++ List getList(String)
+}
+
+abstract class AMenu {
+# TextUI textUI
+# Database fileIO
+# User user
+# String exit
+# String goBack
+# String confirm
+~ {abstract}void display()
+# String chooseMenuOption()
+# String chooseOption()
+# void errorNotAnOption()
+# void errorNotANumber()
+}
+
+class StartMenu {
++ void display()
+- void login()
+- String[] validateUsername(ArrayList<String>)
+- String[] getUserData(ArrayList<String>,String)
+- void validatePassword(String[])
+- void createAccount()
+- String createUsername(ArrayList<String>)
+- void createPassword(String)
+- boolean doesUserExists(ArrayList<String>,String)
++ User getUserAccount()
+}
+
+class MainMenu {
+- String[] categories
+- ArrayList<AMedia> mediaLibrary
+- ArrayList<AMedia> mediasByCategory
+- User user
+- List listOfWatchedMedia
+- List listOfFavorites
++ void display()
+- void loadUserList()
+- void searchByTitle()
+- String showSearchResults(ArrayList<AMedia>,String)
+- ArrayList<AMedia> searchMediaByTitle(String)
+- void searchByCategory()
+- String chooseCategory()
+- String allMediasInCategory(String)
++ ArrayList<AMedia> getAllMediasByCategory(String)
+- void showList(List,String)
+- String chosenMediaMenu(AMedia)
+- void showMedias(ArrayList<AMedia>)
+- void saveToDB()
+- void loadLibrary()
+}
+
+class MediaMenu {
+- AMedia media
+- List listOfWatchedMedia
+- List listOfFavorites
+- String menuChoice
++ void display()
+- void playAddOrRemoveMenu(int,AMedia)
+- void playChosenMedia(AMedia)
+- String chooseSeason(Series)
+- String chooseEpisode(Season,String)
+- void waitToReturn()
+- void addToList(List,AMedia)
+- void deleteFromList(List,AMedia)
++ String getMenuChoice()
+- void setMenuChoice(String)
+}
+
+interface List {
+~ ArrayList<AMedia> getAllMedias()
+~ boolean addMedia(AMedia)
+~ boolean removeMedia(AMedia)
+~ boolean saveList(User)
+~ void loadList(User)
+~ String getListType()
+}
+
+class ListOfWatchedMedia {
+- Database fileIO
+- ArrayList<AMedia> allWatchedMedia
++ ArrayList<AMedia> getAllMedias()
++ String getListType()
++ boolean addMedia(AMedia)
++ boolean removeMedia(AMedia)
++ boolean saveList(User)
++ void loadList(User)
+}
+
+class ListOfFavorites {
+- Database fileIO
+- ArrayList<AMedia> allFavoriteMedias
++ ArrayList<AMedia> getAllMedias()
++ String getListType()
++ boolean addMedia(AMedia)
++ boolean removeMedia(AMedia)
++ boolean saveList(User)
++ void loadList(User)
+}
+
+abstract class AMedia {
+# String data
+# String title
+# String releaseYear
+# double rating
+# ArrayList<String> categories
++ String play()
+~ {abstract}void setAllInformation()
++ String getData()
+~ {abstract}String getType()
++ String getTitle()
++ String getReleaseYear()
++ double getRating()
++ void setTitle(String)
++ void setReleaseYear(String)
++ void setRating(double)
++ void setCategories(ArrayList<String>)
++ String getCategories()
++ String toString()
+}
+
+class Movie {
++ void setAllInformation()
++ String getType()
++ String toString()
+}
+
+class Series {
+- String endingYear
+- ArrayList<Season> allSeasons
+- ArrayList<String> seasonsAndEpisodes
++ void setAllInformation()
+- void loadSeasons()
++ String getType()
++ String getEndingYear()
++ ArrayList<Season> getAllSeasons()
++ String toString()
+}
+
+class Season {
+- int seasonNumber
+- int numberOfEpisodes
+- String seasonAndEpisodes
+- void setSeasonsAndEpisodes()
++ int getSeasonNumber()
++ int getNumberOfEpisodes()
+}
+
+
+Main *-- Program
+
+Program *-- AMenu
+Program *-- User
+
+AMenu *-- Database
+AMenu *-- TextUI
+AMenu <|-- MediaMenu
+AMenu <|-- MainMenu
+AMenu <|-- StartMenu
+AMenu *-- User
+AMenu *-- AMedia
+
+AMedia <|-- Movie
+AMedia <|-- Series
+
+
+Series *-- Season
+
+User o-- List
+
+List *-- Database
+List <|.. ListOfWatchedMedia
+List <|.. ListOfFavorites
+List *-- AMedia
+
+Database <|.. FileIO
+@enduml

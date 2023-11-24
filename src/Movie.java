@@ -1,9 +1,14 @@
 import java.util.ArrayList;
 
 public class Movie extends AMedia {
-    public Movie(String info) {
-        super(info);
+    public Movie(String data) {
+        super(data);
     }
+
+    /**
+     * Splits all the data that's passed as a String when creating a Movie object.
+     * Sets all the information for the Movie object.
+     */
     @Override
     public void setAllInformation() {
         ArrayList<String> categories = new ArrayList<>();
@@ -25,11 +30,19 @@ public class Movie extends AMedia {
         super.setCategories(categories);
     }
 
+    /**
+     * Gets the type of object which is Movie
+     * @return The type as a String
+     */
     @Override
     public String getType() {
         return "MOVIE";
     }
 
+    /**
+     * Display Movie object a certain way
+     * @return The String to display
+     */
     @Override
     public String toString() {
         return getType() +

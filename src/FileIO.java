@@ -4,6 +4,12 @@ import java.util.Scanner;
 
 public class FileIO implements Database {
 
+    /**
+     *
+     * @param path data/userData.txt
+     * @return a String ArrayList with all the users
+     * this method loads all the user in the data/userData.txt
+     */
     public ArrayList<String> loadAllUsers(String path) {
         ArrayList<String> users = new ArrayList<>();
         File file = new File(path);
@@ -22,6 +28,13 @@ public class FileIO implements Database {
         return users;
     }
 
+    /**
+     *
+     * @param path data/userData.txt
+     * @param username the typed name
+     * @param password the typed password
+     * @return true if the writing-process succeeds, false if not
+     */
     public boolean saveUserData(String path, String username, String password) {
         try {
             FileWriter writer = new FileWriter(path, true);
@@ -34,6 +47,12 @@ public class FileIO implements Database {
         return true;
     }
 
+    /**
+     *
+     * @param path either data/100bedstefilm.txt or data/100bedsteserier.txt
+     * @return an ArrayList of medias for either Series og Movie
+     * This method is called to times from MainMenu(loadLibrary()) to make a complete AMedia-ArrayList containing Movies and Series
+     */
     public ArrayList<String> loadAllMedias(String path) {
         ArrayList<String> medias = new ArrayList<>();
         File file = new File(path);
@@ -50,6 +69,14 @@ public class FileIO implements Database {
         return medias;
     }
 
+    /**
+     *
+     * @param user the user logged in
+     * @param listType either favorites or watched
+     * @param listOfMedias a ArrayList containing all our medias
+     * @return true if it was possible to create the .txt-file containing either the users favorite- or watched-list
+     * this method writes both type of AMedia-ArrayList to a .txt-file ex. data/olefavoritesList.txt
+     */
     public boolean saveListData(User user, String listType, ArrayList<AMedia> listOfMedias) {
         try {
             FileWriter writer = new FileWriter("data/" + user.getUsername() + listType + "List.txt");
@@ -68,6 +95,13 @@ public class FileIO implements Database {
         return true;
     }
 
+    /**
+     *
+     * @param user the user logged in
+     * @param listType favorites or watched
+     * @return a ArrayList of all the data of either Series or Movie
+     * this method creates a ArrayList with all the data of our medias by running through the users favorites and movie-lists and comparing them to our media lists.
+     */
     public ArrayList<AMedia> loadListData(User user, String listType) {
         ArrayList<AMedia> medias = new ArrayList<>();
         ArrayList<String> listData = loadAllMedias("data/" + user.getUsername() + listType + "List.txt");

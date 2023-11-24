@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 
 public class StartMenu extends AMenu {
+    /**
+     * Displays the available actions for start menu
+     */
     @Override
     public void display() {
         boolean choosingAction = true;
@@ -29,7 +32,7 @@ public class StartMenu extends AMenu {
                         System.exit(0);
                         break;
                     default:
-                        wrongOption();
+                        errorNotAnOption();
                         break;
                 }
 
@@ -42,6 +45,9 @@ public class StartMenu extends AMenu {
         }
     }
 
+    /**
+     * Loads all user accounts from database and checks if user exists
+     */
     private void login() {
         fileIO = new FileIO();
         ArrayList<String> data = fileIO.loadAllUsers("data/userData.txt");
@@ -56,6 +62,11 @@ public class StartMenu extends AMenu {
         }
     }
 
+    /**
+     * Validates the username
+     * @param data Array list of Strings that represents all users in the database
+     * @return String array which is either null or containing username and password
+     */
     private String[] validateUsername(ArrayList<String> data) {
         boolean isValidatingUsername = true;
         String[] validUser = null;
@@ -82,6 +93,12 @@ public class StartMenu extends AMenu {
         return validUser;
     }
 
+    /**
+     * Checks if the given input matches an existing username
+     * @param data Array list of Strings that represents all users in the database
+     * @param typedUsername
+     * @return String array which is either empty or containing username and password
+     */
     private String[] getUserData(ArrayList<String> data, String typedUsername) {
         String username = "";
         String password = "";
@@ -99,6 +116,10 @@ public class StartMenu extends AMenu {
         return new String[]{username, password};
     }
 
+    /**
+     * Validates the password by checking if the input matches the password saved in the database
+     * @param userData String array containing username and password
+     */
     private void validatePassword(String[] userData) {
         boolean isValidatingPassword = true;
         while (isValidatingPassword) {
@@ -115,6 +136,9 @@ public class StartMenu extends AMenu {
         }
     }
 
+    /**
+     * Loads all user accounts in database and check if user already exists
+     */
     private void createAccount() {
         fileIO = new FileIO();
         ArrayList<String> data = fileIO.loadAllUsers("data/userData.txt");
@@ -125,6 +149,40 @@ public class StartMenu extends AMenu {
         }
     }
 
+    /**
+     * Creates the username if it's not found in the database
+     * @param data Array list of Strings that represents all users in the database
+     * @return "" or username
+     */
+    private String createUsername(ArrayList<String> data) {
+        String username = "";
+        boolean isCreatingUsername = true;
+        while (isCreatingUsername) {
+            String typedUsername = textUI.getInput("\nCreate username (Must begin with a letter) or back to start menu (q): ");
+
+            char firstCharacter = typedUsername.charAt(0);
+            if (typedUsername.equalsIgnoreCase(goBack)) {
+                isCreatingUsername = false;
+            } else if (!Character.isDigit(firstCharacter)) {
+                boolean userExists = doesUserExists(data, typedUsername);
+
+                if (!userExists) {
+                    username = typedUsername;
+                }
+
+                isCreatingUsername = false;
+            } else {
+                textUI.displayErrorMessage("\nMust begin with a letter!");
+            }
+        }
+        return username;
+    }
+
+    /**
+     * Creates the password for the user account being created.
+     * If password is created successfully a User object will be created and saved to the database.
+     * @param username The given username to save
+     */
     private void createPassword(String username) {
         boolean isCreatingPassword = true;
         while (isCreatingPassword) {
@@ -151,30 +209,12 @@ public class StartMenu extends AMenu {
         }
     }
 
-    private String createUsername(ArrayList<String> data) {
-        String username = "";
-        boolean isCreatingUsername = true;
-        while (isCreatingUsername) {
-            String typedUsername = textUI.getInput("\nCreate username (Must begin with a letter) or back to start menu (q): ");
-
-            char firstCharacter = typedUsername.charAt(0);
-            if (typedUsername.equalsIgnoreCase(goBack)) {
-                isCreatingUsername = false;
-            } else if (!Character.isDigit(firstCharacter)) {
-                boolean userExists = doesUserExists(data, typedUsername);
-
-                if (!userExists) {
-                    username = typedUsername;
-                }
-
-                isCreatingUsername = false;
-            } else {
-                textUI.displayErrorMessage("\nMust begin with a letter!");
-            }
-        }
-        return username;
-    }
-
+    /**
+     * Checks if a given username already exists in the database
+     * @param data Array list of Strings that represents all users in the database
+     * @param username The username to check
+     * @return true or false depending on if user exists
+     */
     private boolean doesUserExists(ArrayList<String> data, String username) {
         boolean userExists = false;
         String[] userData = getUserData(data,username);
@@ -194,6 +234,10 @@ public class StartMenu extends AMenu {
         return userExists;
     }
 
+    /**
+     * Gets the user account
+     * @return A user object
+     */
     public User getUserAccount() {
         return user;
     }

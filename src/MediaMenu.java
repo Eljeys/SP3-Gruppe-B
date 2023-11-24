@@ -13,7 +13,7 @@ public class MediaMenu extends AMenu{
     }
 
     /**
-     * Displays the actions for the chosen AMedia object
+     * Displays the available actions for the chosen AMedia object
      */
     @Override
     public void display() {
@@ -61,7 +61,7 @@ public class MediaMenu extends AMenu{
                 waitToReturn();
                 break;
             default:
-                wrongOption();
+                errorNotAnOption();
                 break;
         }
     }
@@ -118,7 +118,7 @@ public class MediaMenu extends AMenu{
                             choosingAction = false;
                         }
                     } else {
-                        wrongOption();
+                        errorNotAnOption();
                     }
                 } catch (NumberFormatException e) {
                     errorNotANumber();
@@ -161,7 +161,7 @@ public class MediaMenu extends AMenu{
                             choosingAction = false;
                         }
                     } else {
-                        wrongOption();
+                        errorNotAnOption();
                     }
                 } catch (NumberFormatException e) {
                     errorNotANumber();
@@ -207,7 +207,7 @@ public class MediaMenu extends AMenu{
      * @param media A given AMedia object
      */
     private void deleteFromList(List list, AMedia media) {
-        boolean removed = list.deleteMedia(media);
+        boolean removed = list.removeMedia(media);
         if (removed) {
             textUI.displayMessage("\n"+media.getTitle() + " has been removed from the list.");
         } else {

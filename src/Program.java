@@ -1,4 +1,7 @@
 public class Program {
+    /**
+     * Method runs infinitely until a user decides to exit
+     */
     public void run() {
         while (true) {
             StartMenu startMenu = new StartMenu();
