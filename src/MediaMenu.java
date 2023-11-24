@@ -185,7 +185,7 @@ public class MediaMenu extends AMenu{
 
     /**
      * Adds the given media object to the given list.
-     * If list if of type Favorite then it displays if it's added or already on.
+     * If list is of type Favorite then it displays if it's added or already on.
      * @param list A given List object
      * @param media A given AMedia object
      */
@@ -202,7 +202,7 @@ public class MediaMenu extends AMenu{
 
     /**
      * Deletes the given media object from the given list.
-     * Displays if the media object has been removed if it on the given list.
+     * Displays if the media object has been removed if it's on the given list.
      * @param list A given List object
      * @param media A given AMedia object
      */
