@@ -2,157 +2,196 @@ import java.util.ArrayList;
 
 public class StartMenu extends AMenu {
     @Override
-    void display() {
-        boolean chooseInput = true;
-        while (chooseInput) {
+    public void display() {
+        boolean choosingAction = true;
+        while (choosingAction) {
             textUI.displayMessage("""
-
+                                        
                     START MENU:
                     1. Login
                     2. Create Account
                     3. Exit
                     """);
 
-            String choice = textUI.getInput("Choose option: ");
+            String input = chooseMenuOption();
 
             try {
-                int menuOption = Integer.parseInt(choice);
+                int menuOption = Integer.parseInt(input);
 
                 switch (menuOption) {
                     case 1:
                         login();
-                        if (user != null) {
-                            chooseInput = false;
-                        }
                         break;
                     case 2:
                         createAccount();
-                        if (user != null) {
-                            chooseInput = false;
-                        }
                         break;
                     case 3:
                         System.exit(0);
                         break;
                     default:
-                        textUI.displayMessage("Not a Menu option!");
+                        wrongOption();
                         break;
                 }
 
+                if (user != null) {
+                    choosingAction = false;
+                }
             } catch (NumberFormatException e) {
-                textUI.displayMessage("Choose a number!");
+                errorNotANumber();
             }
         }
     }
 
     private void login() {
         fileIO = new FileIO();
-        ArrayList<String> data = fileIO.loadUserData("data/userData.txt");
+        ArrayList<String> data = fileIO.loadAllUsers("data/userData.txt");
 
         if (!data.isEmpty()) {
-            outerLoop:
-            while (true) {
-                String typedUsername = textUI.getInput("Input username or back to start menu (q): ");
-
-                if (typedUsername.equalsIgnoreCase("q")) {
-                    break;
-                } else {
-
-                    String p = "";
-                    String u = "";
-                    for (String s : data) {
-                        String[] row = s.split(",");
-                        String username = row[0];
-                        String password = row[1];
-
-                        if (username.equalsIgnoreCase(typedUsername)) {
-                            u = username;
-                            p = password;
-                        }
-                    }
-
-                    if (p.isEmpty() && u.isEmpty()) {
-                        textUI.displayMessage("Could not find user with given username.");
-                    } else {
-                        while (true) {
-                            String typedPassword = textUI.getInput("Input password or back to start menu (q): ");
-
-                            if (p.equals(typedPassword)) {
-                                user = new User(u, p);
-                                break outerLoop;
-                            } else if (typedPassword.equalsIgnoreCase("q")) {
-                                break outerLoop;
-                            } else {
-                                textUI.displayMessage("Password did not match!");
-                            }
-                        }
-                    }
-                }
+            String[] userData = validateUsername(data);
+            if (userData != null) {
+                validatePassword(userData);
             }
         } else {
-            textUI.displayMessage("Could not login.");
+            textUI.displayErrorMessage("\nThere's no user accounts.");
+        }
+    }
+
+    private String[] validateUsername(ArrayList<String> data) {
+        boolean isValidatingUsername = true;
+        String[] validUser = null;
+
+        while (isValidatingUsername) {
+            String typedUsername = textUI.getInput("\nInput username or back to start menu (q): ");
+
+            if (typedUsername.equalsIgnoreCase(goBack)) {
+                isValidatingUsername = false;
+            } else {
+
+                String[] userdata = getUserData(data, typedUsername);
+
+                if (!userdata[0].isEmpty() && !userdata[1].isEmpty()) {
+                    validUser = new String[2];
+                    validUser[0] = userdata[0];
+                    validUser[1] = userdata[1];
+                    isValidatingUsername = false;
+                } else {
+                    textUI.displayErrorMessage("\nCould not find user.");
+                }
+            }
+        }
+        return validUser;
+    }
+
+    private String[] getUserData(ArrayList<String> data, String typedUsername) {
+        String username = "";
+        String password = "";
+        for (String s : data) {
+            String[] row = s.split(",");
+            String usernameData = row[0];
+            String passwordData = row[1];
+
+            if (usernameData.equalsIgnoreCase(typedUsername)) {
+                username = usernameData;
+                password = passwordData;
+            }
+        }
+
+        return new String[]{username, password};
+    }
+
+    private void validatePassword(String[] userData) {
+        boolean isValidatingPassword = true;
+        while (isValidatingPassword) {
+            String typedPassword = textUI.getInput("\nInput password or back to start menu (q): ");
+
+            if (userData[1].equals(typedPassword)) {
+                user = new User(userData[0], userData[1]);
+                isValidatingPassword = false;
+            } else if (typedPassword.equalsIgnoreCase(goBack)) {
+                isValidatingPassword = false;
+            } else {
+                textUI.displayErrorMessage("\nPassword did not match!");
+            }
         }
     }
 
     private void createAccount() {
         fileIO = new FileIO();
-        ArrayList<String> data = fileIO.loadUserData("data/userData.txt");
+        ArrayList<String> data = fileIO.loadAllUsers("data/userData.txt");
 
-        outerLoop:
-        while (true) {
-            String username = textUI.getInput("Create username (Must begin with a letter) or back to start menu (q): ");
+        String username = createUsername(data);
+        if (!username.isEmpty()) {
+            createPassword(username);
+        }
+    }
 
-            char firstCharacter = username.charAt(0);
-            if (username.equalsIgnoreCase("q")) {
-                break;
-            } else if (!Character.isDigit(firstCharacter)) {
+    private void createPassword(String username) {
+        boolean isCreatingPassword = true;
+        while (isCreatingPassword) {
+            String password = textUI.getInput("\nCreate password (Minimum 8 characters) or back to start menu (q): ");
 
-                boolean exist = false;
-                for (String s : data) {
-                    boolean userFound = s.toLowerCase().contains(username.toLowerCase());
-                    if (userFound) {
-                        exist = true;
-                        break;
-                    }
-                }
+            if (password.length() >= 8) {
+                fileIO = new FileIO();
+                boolean userSavedToFile = fileIO.saveUserData("data/userData.txt", username, password);
 
-                if (exist) {
-                    String answer = textUI.getInput("Username already exists. Do you want to login? Y/N: ");
-
-                    if (answer.equalsIgnoreCase("Y")) {
-                        login();
-                    } else {
-                        textUI.displayMessage("\nReturning you to Start Menu.");
-                    }
-                    break;
+                if (!userSavedToFile) {
+                    textUI.displayMessage("\nCould not create an account.");
                 } else {
-                    while (true) {
-                        String password = textUI.getInput("Create password (Minimum 8 characters) or back to start menu (q): ");
-
-                        if (password.length() >= 8) {
-                            fileIO = new FileIO();
-                            boolean userSavedToFile = fileIO.saveUserData("data/userData.txt", username, password);
-
-                            if (!userSavedToFile) {
-                                textUI.displayMessage("Could not create an account.");
-                            } else {
-                                String answer = textUI.getInput("You have now created an account. Log in? Y/N: ");
-                                if (answer.equalsIgnoreCase("Y")) {
-                                    user = new User(username, password);
-                                }
-                            }
-                            break outerLoop;
-                        } else if (password.equalsIgnoreCase("q")) {
-                            break outerLoop;
-                        } else {
-                            textUI.displayMessage("Must be minimum 8 characters long! Try again.");
-                        }
+                    String answer = textUI.getInput("\nYou have now created an account. Log in? Y/N: ");
+                    if (answer.equalsIgnoreCase(confirm)) {
+                        user = new User(username, password);
                     }
                 }
+                isCreatingPassword = false;
+            } else if (password.equalsIgnoreCase(goBack)) {
+                isCreatingPassword = false;
             } else {
-                textUI.displayMessage("Must begin with a letter! Try again.");
+                textUI.displayErrorMessage("\nMust be minimum 8 characters long!");
             }
         }
+    }
+
+    private String createUsername(ArrayList<String> data) {
+        String username = "";
+        boolean isCreatingUsername = true;
+        while (isCreatingUsername) {
+            String typedUsername = textUI.getInput("\nCreate username (Must begin with a letter) or back to start menu (q): ");
+
+            char firstCharacter = typedUsername.charAt(0);
+            if (typedUsername.equalsIgnoreCase(goBack)) {
+                isCreatingUsername = false;
+            } else if (!Character.isDigit(firstCharacter)) {
+                boolean userExists = doesUserExists(data, typedUsername);
+
+                if (!userExists) {
+                    username = typedUsername;
+                }
+
+                isCreatingUsername = false;
+            } else {
+                textUI.displayErrorMessage("\nMust begin with a letter!");
+            }
+        }
+        return username;
+    }
+
+    private boolean doesUserExists(ArrayList<String> data, String username) {
+        boolean userExists = false;
+        String[] userData = getUserData(data,username);
+        if (!userData[0].isEmpty()) {
+            userExists = true;
+        }
+
+        if (userExists) {
+            String answer = textUI.getInput("\nUsername already exists. Do you want to login? Y/N: ");
+
+            if (answer.equalsIgnoreCase(confirm)) {
+                validatePassword(userData);
+            } else {
+                textUI.displayMessage("\nReturning you to Start Menu.");
+            }
+        }
+        return userExists;
     }
 
     public User getUserAccount() {

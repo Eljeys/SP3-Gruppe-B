@@ -1,20 +1,14 @@
 import java.util.ArrayList;
 
-public class Movie extends AMedia <Movie>{
+public class Movie extends AMedia {
     public Movie(String info) {
         super(info);
     }
-
     @Override
-    public void play() {
-
-    }
-
-    @Override
-    public void setMediaData() {
+    public void setAllInformation() {
         ArrayList<String> categories = new ArrayList<>();
 
-        String[] row = getInfo().split(";");
+        String[] row = getData().split(";");
         String title = row[0].trim();
         String releaseYear = row[1].trim();
         String r = row[3].trim().replace(',', '.');
@@ -32,18 +26,13 @@ public class Movie extends AMedia <Movie>{
     }
 
     @Override
-    public Movie getMediaData() {
-        return this;
-    }
-
-    @Override
-    public String getMediaType() {
+    public String getType() {
         return "MOVIE";
     }
 
     @Override
     public String toString() {
-        return getMediaType() +
+        return getType() +
                 super.toString();
     }
 }

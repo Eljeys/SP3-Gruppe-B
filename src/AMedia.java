@@ -1,47 +1,40 @@
 import java.util.ArrayList;
 
-public abstract class AMedia <T> {
-    private Database io;
-    private String info;
-    private String title;
-    private String releaseYear;
-    private double rating;
-    private ArrayList<String> categories;
+public abstract class AMedia {
+    protected final String data;
+    protected String title;
+    protected String releaseYear;
+    protected double rating;
+    protected ArrayList<String> categories;
 
-    public AMedia(String mediaData) {
-        this.info = mediaData;
-        setMediaData();
+    public AMedia(String data) {
+        this.data = data;
+        setAllInformation();
     }
 
-    abstract void setMediaData();
-    abstract T getMediaData();
-
-    abstract void play();
-
-    public String getInfo() {
-        return info;
+    public String play() {
+        return "\n***" + title + " is now playing***";
     }
 
-    public void saveToList(User user, String listType, AMedia<?> media) {
-        List list = user.getList(listType);
-        list.addMedia(media);
+    abstract void setAllInformation();
+
+    public String getData() {
+        return data;
     }
 
-    public void removeFromList(User user, String listType, AMedia<?> media) {
-        List list = user.getList(listType);
-        list.deleteMedia(media);
+    abstract String getType();
+
+    public String getTitle() {
+        return title;
     }
 
-   abstract String getMediaType();
-   public String getTitle() {
-       return title;
-   }
-   public String getReleaseYear() {
-       return releaseYear;
-   }
-   public double getRating() {
-       return rating;
-   }
+    public String getReleaseYear() {
+        return releaseYear;
+    }
+
+    public double getRating() {
+        return rating;
+    }
 
     public void setTitle(String title) {
         this.title = title;
@@ -60,14 +53,13 @@ public abstract class AMedia <T> {
     }
 
     public String getCategories() {
-       String c = "";
-       for (String s: categories) {
-           c = c.concat(s) + ", ";
-       }
+        String c = "";
+        for (String s : categories) {
+            c = c.concat(s) + ", ";
+        }
 
-       return c.substring(0,c.length()-2);
-   }
-
+        return c.substring(0, c.length() - 2);
+    }
     @Override
     public String toString() {
         return "\nTitle: " + getTitle() +

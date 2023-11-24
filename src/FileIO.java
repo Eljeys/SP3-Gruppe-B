@@ -4,30 +4,29 @@ import java.util.Scanner;
 
 public class FileIO implements Database {
 
-    public ArrayList<String> loadUserData(String path) {
-        ArrayList<String> data = new ArrayList<>();
-
+    public ArrayList<String> loadAllUsers(String path) {
+        ArrayList<String> users = new ArrayList<>();
         File file = new File(path);
 
         try {
-            Scanner scanner = new Scanner(file);
-            scanner.nextLine();
+            Scanner scan = new Scanner(file);
+            scan.nextLine();
 
-            while (scanner.hasNextLine()) {
-                String s = scanner.nextLine();
-                data.add(s);
+            while (scan.hasNextLine()) {
+                String userData = scan.nextLine();
+                users.add(userData);
             }
         } catch (FileNotFoundException e) {
             return null;
         }
-        return data;
+        return users;
     }
 
     public boolean saveUserData(String path, String username, String password) {
         try {
             FileWriter writer = new FileWriter(path, true);
-            String textToSave = "\n" + username + "," + password;
-            writer.write(textToSave);
+            String userData = "\n" + username + "," + password;
+            writer.write(userData);
             writer.close();
         } catch (IOException e) {
             return false;
@@ -35,29 +34,30 @@ public class FileIO implements Database {
         return true;
     }
 
-    public ArrayList<String> loadMediaData(String path) {
-        ArrayList<String> movieData = new ArrayList<>();
-        File filmFile = new File(path);
+    public ArrayList<String> loadAllMedias(String path) {
+        ArrayList<String> medias = new ArrayList<>();
+        File file = new File(path);
+
         try {
-            Scanner scanner = new Scanner(filmFile);
-            while (scanner.hasNextLine()) {
-                String s = scanner.nextLine();
-                movieData.add(s);
+            Scanner scan = new Scanner(file);
+            while (scan.hasNextLine()) {
+                String mediaData = scan.nextLine();
+                medias.add(mediaData);
             }
         } catch (FileNotFoundException e) {
             return null;
         }
-        return movieData;
+        return medias;
     }
 
-    public boolean saveListData(User user, String listType, ArrayList<AMedia<?>> listData) {
+    public boolean saveListData(User user, String listType, ArrayList<AMedia> listOfMedias) {
         try {
-            FileOutputStream writer = new FileOutputStream("data/" + user.getUsername() + listType + "List.txt");
+            FileWriter writer = new FileWriter("data/" + user.getUsername() + listType + "List.txt");
 
             String newLine = "";
-            for (AMedia<?> m : listData) {
-                String test = newLine + m.getInfo();
-                writer.write(test.getBytes());
+            for (AMedia media : listOfMedias) {
+                String mediaData = newLine + media.getData();
+                writer.write(mediaData);
                 newLine = "\n";
             }
 
@@ -68,31 +68,30 @@ public class FileIO implements Database {
         return true;
     }
 
-    public ArrayList<AMedia<?>> loadListData(User user, String listType) {
-        ArrayList<AMedia<?>> medias = new ArrayList<>();
-        ArrayList<String> data = loadMediaData("data/" + user.getUsername() + listType + "List.txt");
+    public ArrayList<AMedia> loadListData(User user, String listType) {
+        ArrayList<AMedia> medias = new ArrayList<>();
+        ArrayList<String> listData = loadAllMedias("data/" + user.getUsername() + listType + "List.txt");
 
-        ArrayList<String> allMovies = loadMediaData("data/100bedstefilm.txt");
-        ArrayList<String> allSeries = loadMediaData("data/100bedsteserier.txt");
+        ArrayList<String> allMovies = loadAllMedias("data/100bedstefilm.txt");
+        ArrayList<String> allSeries = loadAllMedias("data/100bedsteserier.txt");
 
-        if (data != null) {
-            for (String info : data) {
+        if (listData != null) {
+            for (String mediaData : listData) {
                 for (String movieData: allMovies) {
-                    if (info.equals(movieData)) {
-                        AMedia<Movie> movie = new Movie(movieData);
+                    if (mediaData.equals(movieData)) {
+                        AMedia movie = new Movie(movieData);
                         medias.add(movie);
                     }
                 }
 
                 for (String seriesData: allSeries) {
-                    if (info.equals(seriesData)) {
-                        AMedia<Series> series = new Series(seriesData);
+                    if (mediaData.equals(seriesData)) {
+                        AMedia series = new Series(seriesData);
                         medias.add(series);
                     }
                 }
             }
         }
-
         return medias;
     }
 }

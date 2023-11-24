@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 
 public class ListOfFavorites implements List{
-    private Database fileIO = new FileIO();
-    private ArrayList<AMedia<?>> favoriteMedias = new ArrayList<>();
+    private final Database fileIO = new FileIO();
+    private ArrayList<AMedia> allFavoriteMedias = new ArrayList<>();
 
     @Override
-    public ArrayList<AMedia<?>> getAllMedias() {
-        return favoriteMedias;
+    public ArrayList<AMedia> getAllMedias() {
+        return allFavoriteMedias;
     }
 
     @Override
@@ -15,22 +15,22 @@ public class ListOfFavorites implements List{
     }
 
     @Override
-    public boolean addMedia(AMedia<?> media) {
-        for (AMedia<?> m: favoriteMedias) {
-            if (m.getInfo().equals(media.getInfo())) {
+    public boolean addMedia(AMedia media) {
+        for (AMedia favorite: allFavoriteMedias) {
+            if (favorite.getData().equals(media.getData())) {
                 return false;
             }
         }
 
-        favoriteMedias.add(media);
+        allFavoriteMedias.add(media);
         return true;
     }
 
     @Override
-    public boolean deleteMedia(AMedia<?> media) {
-        for (AMedia<?> m: favoriteMedias) {
-            if (m.getInfo().equals(media.getInfo())) {
-                favoriteMedias.remove(m);
+    public boolean deleteMedia(AMedia media) {
+        for (AMedia favorite: allFavoriteMedias) {
+            if (favorite.getData().equals(media.getData())) {
+                allFavoriteMedias.remove(favorite);
                 return true;
             }
         }
@@ -38,12 +38,12 @@ public class ListOfFavorites implements List{
     }
 
     @Override
-    public void saveList(User user) {
-        fileIO.saveListData(user,this.getListType(), this.getAllMedias());
+    public boolean saveList(User user) {
+        return fileIO.saveListData(user, this.getListType(), this.getAllMedias());
     }
 
     @Override
     public void loadList(User user) {
-        favoriteMedias = fileIO.loadListData(user,this.getListType());
+        allFavoriteMedias = fileIO.loadListData(user, this.getListType());
     }
 }

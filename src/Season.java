@@ -1,14 +1,14 @@
 import java.util.ArrayList;
 
 public class Season {
-    private int seasonNumber;
-    private int numberOfEpisodes;
+    private final int seasonNumber;
+    private final int numberOfEpisodes;
 
     public Season(String seasonAndEpisode) {
         //"1-13"
-        String[] numbers = seasonAndEpisode.split("-");
-        seasonNumber = Integer.parseInt(numbers[0]);
-        numberOfEpisodes = Integer.parseInt(numbers[1]);
+        String[] number = seasonAndEpisode.split("-");
+        seasonNumber = Integer.parseInt(number[0]);
+        numberOfEpisodes = Integer.parseInt(number[1]);
     }
 
     public int getSeasonNumber() {

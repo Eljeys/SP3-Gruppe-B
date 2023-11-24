@@ -1,30 +1,27 @@
 import java.util.ArrayList;
 
-public class MainMenu extends AMenu{
-    private String[] category = {"Talk-show", "Documentary", "Crime", "Drama", "Action", "Adventure", "Drama", "Comedy", "Fantasy", "Animation", "Horror", "Sci-fi", "War", "Thriller", "Mystery", "Biography", "History", "Family", "Western", "Romance", "Sport"};
-    private ArrayList<AMedia<?>> mediaLibrary = new ArrayList<>();
-    private ArrayList<AMedia<?>> listOfTitles = new ArrayList<>();
-
-    private ArrayList<AMedia<?>> mediasByCategory;
+public class MainMenu extends AMenu {
+    private final String[] categories = {"Talk-show", "Documentary", "Crime", "Drama", "Action", "Adventure", "Drama", "Comedy", "Fantasy", "Animation", "Horror", "Sci-fi", "War", "Thriller", "Mystery", "Biography", "History", "Family", "Western", "Romance", "Sport"};
+    private final ArrayList<AMedia> mediaLibrary = new ArrayList<>();
+    private ArrayList<AMedia> mediasByCategory;
     private User user;
     private List listOfWatchedMedia;
     private List listOfFavorites;
 
     public MainMenu(User user) {
         this.user = user;
-        listOfWatchedMedia = user.getList("watched");
-        listOfFavorites = user.getList("favorites");
+        loadUserList();
         loadLibrary();
     }
 
     @Override
-    void display() {
-        textUI.displayMessage("\nWelcome " + user.getUsername()+"!");
+    public void display() {
+        textUI.displayMessage("\n***Welcome " + user.getUsername() + "!***");
 
-        boolean chooseOption = true;
-        while (chooseOption) {
+        boolean choosingAction = true;
+        while (choosingAction) {
             textUI.displayMessage("""
-
+                                        
                     MAIN MENU:
                     1. Search by title
                     2. Search by category
@@ -33,224 +30,306 @@ public class MainMenu extends AMenu{
                     5. Log out
                     """);
 
-            String choice = textUI.getInput("Choose option: ");
+            String input = chooseMenuOption();
 
             try {
-                int menuOption = Integer.parseInt(choice);
+                int menuOption = Integer.parseInt(input);
+
                 switch (menuOption) {
                     case 1:
-                        String choiceMedia = "";
-                        boolean existInList = false;
-                        while(!existInList) {
-                            choiceMedia = textUI.getInput("Type in media Title: ");
-                            if (doesTitleExistInMedia(choiceMedia)) {
-                                existInList = true;
-                            } else {
-                                textUI.displayMessage("Media doesn't exist in our list");
-                            }
-                        }
-                        displayAllMedia(searchMediaByTitle(choiceMedia));
-                        String choiceTitle = textUI.getInput("Choose a media from the list!");
-                        int menuOption2 = Integer.parseInt(choiceTitle);
-                        ArrayList<AMedia<?>> listOfChosenTitle = searchMediaByTitle(choiceMedia);
-                        AMedia<?> chosenTitle = listOfChosenTitle.get(menuOption2-1);
-                        if(Integer.parseInt(choiceTitle) > 0 &&  Integer.parseInt(choiceTitle) <= listOfTitles.size()) {
-                            textUI.displayMessage("What do you want to do with '" + chosenTitle.getTitle() + "'");
-                            textUI.displayMessage("""
-                                    
-                                    1. Play media
-                                    2. Save media to Favorites
-                                    3. Remove media from Favorites
-                                                                
-                                    """);
-                            String choice2 = textUI.getInput("choose an option: ");
-                            try {
-                                playAddOrRemoveMenu(choice2,chosenTitle);
-                            } catch (NumberFormatException e) {
-                                textUI.displayMessage("choose a number!");
-                            }
-                        }
+                        searchByTitle();
                         break;
                     case 2:
-                        for (int i = 1; i < category.length+1; i++) {
-                            textUI.displayMessage(i + ". " + category[i-1]);
-                        }
-                        String chooseCategory = textUI.getInput("Choose a category");
-                        boolean validOption = false;
-                        try {
-                            int menuOption4 = Integer.parseInt(chooseCategory);
-                            if(menuOption4 >= 1 && menuOption4 <= (category.length)) {
-                                displayMediaByCategory(searchMediaByCategory(category[menuOption4-1]), category[menuOption4-1]);
-                                validOption = true;
-                            } else {
-                                textUI.displayMessage("Not a menu option!");
-                            }
-                        } catch (NumberFormatException e) {
-                            textUI.displayMessage("Choose a number!");
-                        }
-                        if(validOption) {
-                            String choiceCategory = textUI.getInput("Choose a media from the list!");
-                            int menuOption5 = Integer.parseInt(choiceCategory);
-                            AMedia<?> chosenMedia = mediasByCategory.get(menuOption5 - 1);
-                            if (menuOption5 > 0 && menuOption5 <= mediasByCategory.size()) {
-                                textUI.displayMessage("What do you want to do with '" + chosenMedia.getTitle() + "'");
-                                textUI.displayMessage("""
-                                                                            
-                                        1. Play media
-                                        2. Save media to Favorites
-                                        3. Remove media from Favorites
-                                                                           
-                                        """);
-                                String choiceMediaCategory = textUI.getInput("Choose an option");
-                                try {
-                                    playAddOrRemoveMenu(choiceMediaCategory,chosenMedia);
-                                } catch (NumberFormatException e) {
-                                    textUI.displayMessage("Choose a number!");
-                                }
-                            }
-                        }
+                        searchByCategory();
                         break;
                     case 3:
-                        textUI.displayMessage("WatchList Of Medias\n");
-                        showList(listOfWatchedMedia);
+                        showList(listOfWatchedMedia, "watched");
                         break;
                     case 4:
-                        textUI.displayMessage("List Of Saved Medias\n");
-                        showList(listOfFavorites);
+                        showList(listOfFavorites, "favorite");
                         break;
                     case 5:
-                        //logout
                         saveToDB();
                         user = null;
-                        chooseOption = false;
+                        choosingAction = false;
                         break;
                     default:
-                        textUI.displayMessage("Not a Menu option!");
+                        wrongOption();
                         break;
                 }
             } catch (NumberFormatException e) {
-                textUI.displayMessage("Choose a number!");
+                errorNotANumber();
+            }
+        }
+    }
+
+    private void loadUserList() {
+        listOfWatchedMedia = user.getList("watched");
+        listOfFavorites = user.getList("favorites");
+
+        if (listOfWatchedMedia == null) {
+            textUI.displayErrorMessage("\nCould not load your watch history.");
+        }
+
+        if (listOfFavorites == null) {
+            textUI.displayErrorMessage("\nCould not load your list of favorites.");
+        }
+    }
+
+    private void searchByTitle() {
+        boolean searching = true;
+        while (searching) {
+            String input = textUI.getInput("\nSearch by title: ");
+            ArrayList<AMedia> mediasContainingInput = searchMediaByTitle(input);
+            if (mediasContainingInput.isEmpty()) {
+                textUI.displayMessage("\n***No Movies or Series with matching title.***\n");
+            } else {
+                String searchResult = showSearchResults(mediasContainingInput, input);
+                if (searchResult.equalsIgnoreCase(exit)) {
+                    searching = false;
+                }
+            }
+        }
+    }
+
+    private String showSearchResults(ArrayList<AMedia> mediasContainingInput, String searchWord) {
+        String action = "";
+        boolean choosingAction = true;
+        while (choosingAction) {
+            textUI.displayMessage("\nYOU SEARCHED FOR: " + searchWord.toUpperCase());
+            showMedias(mediasContainingInput);
+
+            String input = chooseOption();
+            if (input.equalsIgnoreCase(goBack)) {
+                action = goBack;
+                choosingAction = false;
+            } else {
+                try {
+                    int mediaChoice = Integer.parseInt(input);
+                    if (mediaChoice > 0 && mediaChoice <= mediasContainingInput.size()) {
+                        String menuAction = chosenMediaMenu(mediasContainingInput.get(mediaChoice-1));
+
+                        if (menuAction.equalsIgnoreCase(exit)) {
+                            action = exit;
+                            choosingAction = false;
+                        }
+                    } else {
+                        wrongOption();
+                    }
+                } catch (NumberFormatException e) {
+                    errorNotANumber();
+                }
+            }
+        }
+        return action;
+    }
+
+
+    private ArrayList<AMedia> searchMediaByTitle(String title) {
+        ArrayList<AMedia> listOfTitles = new ArrayList<>();
+        for (AMedia media : mediaLibrary) {
+            if (media.getTitle().toLowerCase().contains(title.toLowerCase())) {
+                listOfTitles.add(media);
+            }
+        }
+        return listOfTitles;
+    }
+
+
+    private void searchByCategory() {
+        boolean choosingCategory = true;
+        while (choosingCategory) {
+            String category = chooseCategory();
+
+            if (category.equalsIgnoreCase(goBack)) {
+                choosingCategory = false;
+            } else if (!category.isEmpty()) {
+                boolean choosingMedia = true;
+                while (choosingMedia) {
+                    String choice = allMediasInCategory(category);
+
+                    if (choice.equalsIgnoreCase(goBack)) {
+                        choosingMedia = false;
+                    } else if (!choice.equalsIgnoreCase(exit)) {
+                        try {
+                            int mediaChoice = Integer.parseInt(choice);
+                            String menuAction = chosenMediaMenu(mediasByCategory.get(mediaChoice - 1));
+                            if (menuAction.equalsIgnoreCase(exit)) {
+                                choosingMedia = false;
+                                choosingCategory = false;
+                            }
+                        } catch (NumberFormatException e) {
+                            errorNotANumber();
+                        }
+                    } else {
+                        choosingMedia = false;
+                    }
+                }
+            } else {
+                choosingCategory = false;
+            }
+        }
+    }
+
+    private String chooseCategory() {
+        String action = "";
+        boolean choosingAction = true;
+        while (choosingAction) {
+            textUI.displayMessage("\nALL CATEGORIES:");
+            for (int i = 1; i < categories.length + 1; i++) {
+                textUI.displayMessage(i + ". " + categories[i - 1]);
+            }
+
+            String input = chooseOption();
+            if (input.equalsIgnoreCase(goBack)) {
+                action = goBack;
+                choosingAction = false;
+            } else {
+                try {
+                    int categoryChoice = Integer.parseInt(input);
+
+                    if (categoryChoice > 0 && categoryChoice <= (categories.length)) {
+                        action = categories[categoryChoice - 1];
+                        choosingAction = false;
+                    } else {
+                        wrongOption();
+                    }
+                } catch (NumberFormatException e) {
+                    errorNotANumber();
+                }
+            }
+        }
+        return action;
+    }
+
+    private String allMediasInCategory(String category) {
+        String action = "";
+        boolean choosingAction = true;
+        while (choosingAction) {
+            textUI.displayMessage("\nCATEGORY: " + category.toUpperCase());
+            showMedias(getAllMediasByCategory(category));
+
+            String input = chooseOption();
+            if (input.equalsIgnoreCase(goBack)) {
+                action = goBack;
+                choosingAction = false;
+            } else {
+                try {
+                    int mediaChoice = Integer.parseInt(input);
+                    if (mediaChoice > 0 && mediaChoice <= mediasByCategory.size()) {
+                        action = String.valueOf(mediaChoice);
+                        choosingAction = false;
+                    } else {
+                        wrongOption();
+                    }
+                } catch (NumberFormatException e) {
+                    errorNotANumber();
+                }
+            }
+        }
+        return action;
+    }
+
+    public ArrayList<AMedia> getAllMediasByCategory(String category) {
+        mediasByCategory = new ArrayList<>();
+        for (AMedia media : mediaLibrary) {
+            String categories = media.getCategories();
+            if (categories.toLowerCase().contains(category.toLowerCase())) {
+                mediasByCategory.add(media);
+            }
+        }
+        return mediasByCategory;
+    }
+
+    private void showList(List list, String listType) {
+        ArrayList<AMedia> allWatchedMedia = list.getAllMedias();
+
+        boolean choosingAction = true;
+        while (choosingAction) {
+            textUI.displayMessage("\nALL " + listType.toUpperCase() + " MOVIES AND SERIES:");
+            showMedias(allWatchedMedia);
+
+            String input = chooseOption();
+
+            if (input.equalsIgnoreCase(goBack)) {
+                choosingAction = false;
+            } else {
+                try {
+                    int mediaChoice = Integer.parseInt(input);
+
+                    if (mediaChoice > 0 && mediaChoice <= allWatchedMedia.size()) {
+                        String menuAction = chosenMediaMenu(allWatchedMedia.get(mediaChoice-1));
+
+                        if (menuAction.equalsIgnoreCase(exit)) {
+                            choosingAction = false;
+                        }
+                    } else {
+                        wrongOption();
+                    }
+                } catch (NumberFormatException e) {
+                    errorNotANumber();
+                }
+            }
+        }
+    }
+
+    private String chosenMediaMenu(AMedia media) {
+        String action = "";
+        boolean choosingAction = true;
+        while (choosingAction) {
+            MediaMenu mediaMenu = new MediaMenu(media, listOfWatchedMedia, listOfFavorites);
+            mediaMenu.display();
+            String choice = mediaMenu.getMenuChoice();
+            if (choice.equalsIgnoreCase(exit)) {
+                action = exit;
+                choosingAction = false;
+            } else if (choice.equalsIgnoreCase(goBack)) {
+                action = goBack;
+                choosingAction = false;
+            }
+        }
+        return action;
+    }
+
+    private void showMedias(ArrayList<AMedia> listOfMedias) {
+        if (listOfMedias.isEmpty()) {
+            textUI.displayMessage("\n***Your list is empty***");
+        } else {
+            int number = 1;
+            for (AMedia m : listOfMedias) {
+                textUI.displayMessage(number + ". (" + m.getType() + ") " + m.getTitle() + "; " + m.getReleaseYear());
+                number++;
             }
         }
     }
 
     private void saveToDB() {
         if (listOfWatchedMedia != null) {
-            listOfWatchedMedia.saveList(user);
+            boolean saved = listOfWatchedMedia.saveList(user);
+            if (!saved) {
+                textUI.displayErrorMessage("\nCould not save all your watched Movies and Series.");
+            }
         }
-
         if (listOfFavorites != null) {
-            listOfFavorites.saveList(user);
+            boolean saved = listOfFavorites.saveList(user);
+            if (!saved) {
+                textUI.displayErrorMessage("\nCould not save all your favorite Movies and Series.");
+            }
         }
     }
 
     private void loadLibrary() {
-        ArrayList<String> movieData = fileIO.loadMediaData("data/100bedstefilm.txt");
-        ArrayList<String> serieData = fileIO.loadMediaData( "data/100bedsteserier.txt");
+        ArrayList<String> movieData = fileIO.loadAllMedias("data/100bedstefilm.txt");
+        ArrayList<String> seriesData = fileIO.loadAllMedias("data/100bedsteserier.txt");
 
-        for (String s: movieData) {
-            AMedia<Movie> movie = new Movie(s);
+        for (String s : movieData) {
+            AMedia movie = new Movie(s);
             mediaLibrary.add(movie);
         }
 
-        for (String s: serieData) {
-            AMedia<Series> series = new Series(s);
+        for (String s : seriesData) {
+            AMedia series = new Series(s);
             mediaLibrary.add(series);
         }
     }
-
-    private void playAddOrRemoveMenu(String choice, AMedia<?> chosenMedia) {
-        int menuOption = Integer.parseInt(choice);
-        switch (menuOption) {
-            case 1:
-                textUI.displayMessage(chosenMedia.getTitle() + " is now playing");
-                addToList(listOfWatchedMedia, chosenMedia, chosenMedia.getTitle());
-                break;
-            case 2:
-                addToList(listOfFavorites, chosenMedia, chosenMedia.getTitle());
-                break;
-            case 3:
-                deleteFromList(listOfFavorites, chosenMedia, chosenMedia.getTitle());
-                break;
-            default:
-                textUI.displayMessage("Not a Menu option");
-                break;
-        }
-    }
-
-    private void addToList(List list, AMedia<?> media, String chosenMedia) {
-        boolean isAdded = list.addMedia(media);
-        if(isAdded) {
-            textUI.displayMessage(chosenMedia + " has been added to your SaveList");
-        } else {
-            textUI.displayMessage(chosenMedia + " is already on the list!");
-        }
-    }
-    private void deleteFromList(List list, AMedia<?> media, String chosenMedia) {
-        boolean isRemoved = list.deleteMedia(media);
-        if(isRemoved) {
-            textUI.displayMessage( chosenMedia + " has been removed from the list.");
-        } else {
-            textUI.displayMessage( chosenMedia + " is not on the list!");
-        }
-    }
-
-    private void showList(List list) {
-        ArrayList<AMedia<?>> medias = list.getAllMedias();
-        int counter = 1;
-        for (AMedia<?> m: medias) {
-            textUI.displayMessage(counter + ": (" + m.getMediaType() + ") " + m.getTitle() + "; " + m.getReleaseYear());
-            counter++;
-        }
-    }
-
-
-
-    public ArrayList<AMedia<?>> searchMediaByCategory(String category) {
-        mediasByCategory = new ArrayList<>();
-        for (AMedia<?> m : mediaLibrary) {
-            String categories = m.getCategories();
-            if (categories.toLowerCase().contains(category.toLowerCase())) {
-                mediasByCategory.add(m);
-            }
-        }
-        return mediasByCategory;
-    }
-
-    public ArrayList<AMedia<?>> searchMediaByTitle(String title) {
-        listOfTitles = new ArrayList<>();
-        for(AMedia<?> m: mediaLibrary) {
-            if(m.getTitle().equalsIgnoreCase(title)) {
-                listOfTitles.add(m);
-            }
-        }
-        return listOfTitles;
-    }
-    boolean doesTitleExistInMedia(String chooseMedia) {
-        for(AMedia<?> m: mediaLibrary) {
-            if(m.getTitle().equalsIgnoreCase(chooseMedia)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    void displayMediaByCategory(ArrayList<AMedia<?>> listOfMedias, String category) {
-        int count = 0;
-        textUI.displayMessage("I have found "+listOfMedias.size()+" medias with "+category+" as category");
-        for(AMedia<?> m: listOfMedias) {
-            count++;
-            textUI.displayMessage(count+"\n"+m.toString());
-        }
-
-    }
-
-    void displayAllMedia(ArrayList<AMedia<?>> listOfMedias) {
-        int count = 0;
-        for(AMedia<?> m: listOfMedias) {
-            count++;
-            System.out.println(count+"\n"+m.toString());
-        }
-    }
-
 }
-

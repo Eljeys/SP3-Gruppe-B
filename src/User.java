@@ -1,8 +1,8 @@
 public class User {
     private String username;
     private String password;
-    private List listOfWatchedMedia = new ListOfWatchedMedia();
-    private List listOfFavorites = new ListOfFavorites();
+    private final List listOfWatchedMedia = new ListOfWatchedMedia();
+    private final List listOfFavorites = new ListOfFavorites();
 
     public User(String username, String password) {
         this.username = username;
